@@ -113,10 +113,6 @@ module.exports = function(config) {
 		'HeadlessChrome': ['HeadlessChrome']
 	};
 
-	var reporters = ['mocha','coverage','aChecker'];
-	if( process.env.TRAVIS_CI ){
-		reporters = ['mocha', 'coverage', 'coveralls','aChecker']
-	}
 
 	var target = process.env.TARGET;
 	if( !target ){
@@ -130,10 +126,9 @@ module.exports = function(config) {
 		browsers = process.env.BROWSERS.split(',');
 	}
 
-
 	config.set({
 		basePath: '../',
-		frameworks: ['mocha', 'chai','aChecker'],
+		frameworks: ['mocha', 'chai'],
 		files: [
 			{
 				pattern: 'test/tests/esm-module.js',
@@ -172,7 +167,7 @@ module.exports = function(config) {
 			name:  process.env.TRAVIS_CI ? 'tom-select': '',
 		},
 		customLaunchers: customLaunchers,
-		reporters: reporters,
+		reporters: ['mocha','coverage'],
 		colors: true,
 		logLevel: config.LOG_INFO,
 		browsers: browsers,
