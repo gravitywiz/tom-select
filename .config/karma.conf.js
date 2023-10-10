@@ -1,6 +1,6 @@
 module.exports = function(config) {
 
-	var customLaunchers = {};
+	const customLaunchers = {};
 
 	if (process.env.TARGET === 'browserstack') {
 
@@ -107,21 +107,21 @@ module.exports = function(config) {
 									};
 	}
 
-	var targets = {
+	const targets = {
 		'browserstack': Object.keys(customLaunchers),
 		'HeadlessFirefox': ['HeadlessFirefox'],
 		'HeadlessChrome': ['HeadlessChrome']
 	};
 
 
-	var target = process.env.TARGET;
+	let target = process.env.TARGET;
 	if( !target ){
 		target = 'HeadlessChrome';
 		process.env.CHROME_BIN = require('puppeteer').executablePath();
 	}
 
 
-	var browsers = targets[target];
+	let browsers = targets[target];
 	if( process.env.BROWSERS ){
 		browsers = process.env.BROWSERS.split(',');
 	}
