@@ -1,13 +1,7 @@
-<!--
-Thanks for taking the time to improve Tom Select. We really appreciate it.
+## Context
 
-Before opening the PR, please:
+<!-- Include relevant links to discussion threads, tickets, etc. -->
 
-* Make sure tests pass by running `npm test`
-* Do not make changes to the /dist folder
+## Summary
 
-In the best case scenario, you are also adding tests to back up your changes,
-but don't sweat it if you don't. We can discuss them at a later date.
-
-Thanks again, we really appreciate this!
--->
+<!-- A summary of what is included in the PR and why. -->
