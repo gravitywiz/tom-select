@@ -2,25 +2,34 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-orbs:
-  node: circleci/node@5.1.0
-
 jobs:
   build_and_test:
     docker:
       - image: cimg/node:20.9.0-browsers
-    executor: node/default
+
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1.2
+
+      - restore_cache:
+          key: dependency-cache-v1-{{ checksum "yarn.lock" }}
+
       - run:
           command: yarn install
           name: Install Dependencies
+    
+      - save_cache:
+          key: dependency-cache-v1-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+            # Cache Chromium (which is downloaded and used by Puppeteer) so that it can be reused between builds.
+            # If it isn't cached, then the test process will crash when running a cached version of Puppeteer as
+            # Puppeteer only downloads Chromium when it is first installed.
+            - ~/.cache/puppeteer
+
       - run:
           command: yarn build
           name: Build Assets
+
       - run:
           command: yarn test
           name: Run Tests
