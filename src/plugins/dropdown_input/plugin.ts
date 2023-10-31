@@ -71,6 +71,7 @@ export default function (this: TomSelect) {
 		// prevent onBlur from closing when focus is on the control_input
 		const orig_onBlur = self.onBlur;
 		self.hook('instead', 'onBlur', (evt?: FocusEvent) => {
+			// eslint-disable-next-line eqeqeq
 			if (evt && evt.relatedTarget == self.control_input) {
 				return;
 			}

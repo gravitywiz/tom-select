@@ -4,6 +4,8 @@ module.exports = {
 	rules: {
 		'unused-imports/no-unused-imports': 'error',
 		'jsdoc/require-param': 'off',
+		'jsdoc/require-returns-description': 'off',
+		'jsdoc/check-param-names': 'off',
 		curly: 'error',
 		camelcase: 'off',
 	},

@@ -71,6 +71,7 @@ export default function getSettings(
 
 		const addOption = (option: HTMLOptionElement, group?: string) => {
 			const value = hash_key(option.value);
+			// eslint-disable-next-line eqeqeq
 			if (value == null) {
 				return;
 			}
@@ -114,9 +115,7 @@ export default function getSettings(
 		};
 
 		const addGroup = (optgroup: HTMLOptGroupElement) => {
-			let id: string, optgroup_data;
-
-			optgroup_data = readData(optgroup);
+			const optgroup_data = readData(optgroup);
 			optgroup_data[field_optgroup_label] =
 				optgroup_data[field_optgroup_label] ||
 				optgroup.getAttribute('label') ||
@@ -127,7 +126,7 @@ export default function getSettings(
 				optgroup_data[field_disabled] || optgroup.disabled;
 			settings_element.optgroups.push(optgroup_data);
 
-			id = optgroup_data[field_optgroup_value];
+			const id: string = optgroup_data[field_optgroup_value];
 
 			iterate(optgroup.children, (option) => {
 				addOption(option as HTMLOptionElement, id);
@@ -160,6 +159,7 @@ export default function getSettings(
 			}
 			const values = value.split(settings.delimiter);
 
+			// eslint-disable-next-line @typescript-eslint/no-shadow
 			iterate(values, (value) => {
 				const option: TomOption = {};
 				option[field_label] = value;
