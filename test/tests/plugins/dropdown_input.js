@@ -18,6 +18,7 @@ describe('plugin: dropdown_input', function () {
 
 		await asyncClick(test.instance.control);
 		assert.equal(test.instance.isOpen, true);
+		// eslint-disable-next-line @wordpress/no-global-active-element
 		assert.equal(document.activeElement, test.instance.control_input);
 	});
 
@@ -89,7 +90,7 @@ describe('plugin: dropdown_input', function () {
 
 					assert.equal(query, expected_load_query);
 
-					if (expected_load_queries.length == 0) {
+					if (expected_load_queries.length === 0) {
 						done();
 					}
 

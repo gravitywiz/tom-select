@@ -61,13 +61,13 @@ describe('plugin: optgroup_columns', function () {
 		await asyncClick(test.instance.control);
 		await asyncType('a[right]');
 
-		var optgroup = test.instance.activeOption.parentNode;
+		let optgroup = test.instance.activeOption.parentNode;
 		expect(optgroup.dataset.group).to.be.equal('audi');
 
 		// 2) move left to chevy
 		await asyncType('[left]');
 
-		var optgroup = test.instance.activeOption.parentNode;
+		optgroup = test.instance.activeOption.parentNode;
 		expect(optgroup.dataset.group).to.be.equal('chevrolet');
 	});
 });

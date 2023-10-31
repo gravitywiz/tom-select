@@ -267,7 +267,7 @@ describe('Events', function () {
 				'<select><option value="a" selected></option><option value="b" selected></option><option value="c"></option></select>',
 				{}
 			);
-			test.instance.on('optgroup_add', function (id, data) {
+			test.instance.on('optgroup_add', function (id) {
 				expect(id).to.be.equal('id');
 				done();
 			});

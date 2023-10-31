@@ -57,6 +57,7 @@ describe('plugin: change_listener', function () {
 
 		assert.equal(
 			test.instance.control_input,
+			// eslint-disable-next-line @wordpress/no-global-active-element
 			document.activeElement,
 			'should maintain input focus'
 		);

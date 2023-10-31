@@ -1,13 +1,14 @@
-describe('ESM Module', function (d1) {
+describe('ESM Module', function () {
 	this.timeout(10000);
 
 	it_n('should initialize without exceptions', async () => {
+		// eslint-disable-next-line import/no-unresolved
 		import('/base/build/esm/tom-select.complete.js')
 			.then(function (SelectModule) {
-				const instance = new SelectModule.default('<select>');
+				new SelectModule.default('<select>');
 				assert.isTrue(true);
 			})
-			.catch(function (err) {
+			.catch(function () {
 				assert.fail('import tom-select.complete.js failed');
 			});
 	});
@@ -18,6 +19,7 @@ describe('ESM Module', function (d1) {
 			last_keydown = evt;
 		});
 
+		// eslint-disable-next-line import/no-unresolved
 		const util_module = await import('/base/build/esm/utils.js');
 
 		await asyncType('[alt]', document.body);

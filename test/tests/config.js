@@ -114,6 +114,7 @@ describe('Configuration settings', function () {
 			const test = setup_test('<input class="classA classB">', {
 				copyClassesToDropdown: true,
 			});
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.dropdown.classList.contains('classA')).to.be
 				.true;
 		});
@@ -122,6 +123,7 @@ describe('Configuration settings', function () {
 			const test = setup_test('<input class="classA classB">', {
 				copyClassesToDropdown: false,
 			});
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.dropdown.classList.contains('classA')).to.be
 				.false;
 		});
@@ -131,6 +133,7 @@ describe('Configuration settings', function () {
 		it_n('onInitialize should be called', function (done) {
 			setup_test('<input>', {
 				onInitialize() {
+					// eslint-disable-next-line no-unused-expressions
 					expect(true).to.be.true;
 					done();
 				},

@@ -1,6 +1,7 @@
 window.expect = chai.expect;
 window.assert = chai.assert;
 window.has_focus = function (elem) {
+	// eslint-disable-next-line @wordpress/no-global-active-element
 	return !!(elem === document.activeElement);
 };
 
@@ -17,8 +18,6 @@ preventHover.style.cssText =
 	'position:absolute;top:0;left:0;right:0;bottom:0;z-index:10000';
 document.body.appendChild(preventHover);
 
-const IS_MAC = /Mac/.test(navigator.userAgent);
-const shortcut_key = IS_MAC ? 'meta' : 'ctrl';
 let test_number = 0;
 
 const teardownLast = function () {
@@ -66,7 +65,7 @@ window.setup_test = function (html, options, callback) {
 		select = sandbox.firstChild;
 	}
 
-	if (select.nodeName == 'SELECT' || select.nodeName == 'INPUT') {
+	if (select.nodeName === 'SELECT' || select.nodeName === 'INPUT') {
 		instance = tomSelect(select, options);
 	}
 
@@ -92,6 +91,15 @@ after(function () {
 	window.teardownLast();
 });
 
+/**
+ * The following section defines function used throughout the rest of the test suite.
+ * They are not called in this file, but are colled in other files.
+ */
+const IS_MAC = /Mac/.test(navigator.userAgent);
+// eslint-disable-next-line no-unused-vars
+const shortcut_key = IS_MAC ? 'meta' : 'ctrl';
+
+// eslint-disable-next-line no-unused-vars
 const it_n = function (label, orig_func) {
 	let new_func;
 
@@ -116,10 +124,12 @@ const it_n = function (label, orig_func) {
 	it.call(this, label, new_func);
 };
 
+// eslint-disable-next-line no-unused-vars
 const click = function (el, cb) {
 	syn.click(el).delay(100, cb);
 };
 
+// eslint-disable-next-line no-unused-vars
 function isVisible(el) {
 	return el.offsetParent !== null;
 }

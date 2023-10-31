@@ -9,6 +9,7 @@ module.exports = {
 		curly: 'error',
 		camelcase: 'off',
 	},
+	ignorePatterns: ['test/html/**/*'],
 	overrides: [
 		{
 			files: ['test/**/*.js', 'test/**/*.ts'],

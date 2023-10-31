@@ -120,7 +120,7 @@ describe('API', function () {
 				const test = setup_test('<select>', {
 					valueField: 'value',
 					labelField: 'value',
-					create(input) {
+					create() {
 						return false;
 					},
 				});
@@ -137,7 +137,7 @@ describe('API', function () {
 				const test = setup_test('<select>', {
 					valueField: 'value',
 					labelField: 'value',
-					create(input) {
+					create() {
 						return 'hello';
 					},
 				});
@@ -152,7 +152,7 @@ describe('API', function () {
 			'should fail if invalid object returned by "create" callback',
 			function () {
 				const test = setup_test('<select>', {
-					create(input) {
+					create() {
 						return { value: null };
 					},
 				});
@@ -179,7 +179,7 @@ describe('API', function () {
 		it_n(
 			'should add option upon completion (asynchronous)',
 			function (done) {
-				var test = setup_test('<select>', {
+				const test = setup_test('<select>', {
 					valueField: 'value',
 					labelField: 'value',
 					create(input, callback) {
@@ -299,7 +299,7 @@ describe('API', function () {
 			test.instance.on('item_select', function (item) {
 				selected_values.push(item.dataset.value);
 
-				if (selected_values.length == 2) {
+				if (selected_values.length === 2) {
 					assert.deepEqual(selected_values, ['a', 'b']);
 					done();
 				}
@@ -431,7 +431,7 @@ describe('API', function () {
 			expect(test.instance.items.indexOf('0')).to.not.be.equal(-1);
 		});
 		it_n('should not fire "change" if silent is truthy', function (done) {
-			const watcher = function (e) {
+			const watcher = function () {
 				throw new Error('Change fired');
 			};
 			test.instance.on('change', watcher);
@@ -675,24 +675,32 @@ describe('API', function () {
 
 		it_n('should allow string values', function () {
 			const test = optionTest();
-			const a = test.instance.getOption('a');
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption('a')).to.be.ok;
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption('b')).to.be.ok;
 		});
 		it_n('should allow integer values', function () {
 			const test = optionTest();
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption(0)).to.be.ok;
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption(1)).to.be.ok;
 		});
 		it_n('should allow values with quotation marks', function () {
 			const test = optionTest();
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption("'")).to.be.ok;
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption('"')).to.be.ok;
 		});
 		it_n('should allow values with backslashes', function () {
 			const test = optionTest();
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption('\\')).to.be.ok;
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption("\\'")).to.be.ok;
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getOption('\\"')).to.be.ok;
 		});
 		it_n('should not allow undefined / null values', function () {
@@ -718,10 +726,10 @@ describe('API', function () {
 		it_n('should create option with getOption(a,true)', function () {
 			const test = setup_test('AB_Multi');
 
-			var option = test.instance.getOption('a');
+			let option = test.instance.getOption('a');
 			assert.isNull(option);
 
-			var option = test.instance.getOption('a', true);
+			option = test.instance.getOption('a', true);
 			assert.isNotNull(option);
 		});
 	});
@@ -747,28 +755,29 @@ describe('API', function () {
 			});
 		});
 		it_n('should allow string values', function () {
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem('a')).to.be.ok;
-			//expect(test.instance.getItem('a').length).to.be.equal(1);
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem('b')).to.be.ok;
 			//expect(test.instance.getItem('b').length).to.be.equal(1);
 		});
 		it_n('should allow integer values', function () {
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem(0)).to.be.ok;
-			//expect(test.instance.getItem(0).length).to.be.equal(1);
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem(1)).to.be.ok;
-			//expect(test.instance.getItem(1).length).to.be.equal(1);
 		});
 		it_n('should allow values with quotation marks', function () {
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem("'")).to.be.ok;
-			//expect(test.instance.getItem('\'').length).to.be.equal(1);
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem('"')).to.be.ok;
-			//expect(test.instance.getItem('"').length).to.be.equal(1);
 		});
 		it_n('should allow values with backslashes', function () {
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem("\\'")).to.be.ok;
-			//expect(test.instance.getItem('\\\'').length).to.be.equal(1);
+			// eslint-disable-next-line no-unused-expressions
 			expect(test.instance.getItem('\\"')).to.be.ok;
-			//expect(test.instance.getItem('\\"').length).to.be.equal(1);
 		});
 		it_n('should not allow undefined / null values', function () {
 			expect(test.instance.getItem(null)).to.be.equal(null);
@@ -778,6 +787,7 @@ describe('API', function () {
 		});
 
 		it_n('should get empty item', () => {
+			// eslint-disable-next-line no-shadow
 			const test = setup_test(
 				'<select><option value="">empty</option><option value="a">a</option></select>',
 				{ allowEmptyOption: true }
@@ -873,7 +883,7 @@ describe('API', function () {
 
 		it_n('should not fire "change" if silent is truthy', function (done) {
 			const test = clearTest();
-			const watcher = function (e) {
+			const watcher = function () {
 				throw new Error('Change fired');
 			};
 			test.instance.on('change', watcher);
@@ -957,8 +967,8 @@ describe('API', function () {
 						valueField: 'value',
 						labelField: 'value',
 						options: [{ value: 0 }, { value: 1 }],
-						score(query) {
-							return function (item) {
+						score() {
+							return function () {
 								return 0;
 							};
 						},
