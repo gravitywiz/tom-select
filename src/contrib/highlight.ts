@@ -50,6 +50,7 @@ export const highlight = (element: HTMLElement, regex: string | RegExp) => {
 			!/(script|style)/i.test(node.tagName) &&
 			(node.className !== 'highlight' || node.tagName !== 'SPAN')
 		) {
+			// eslint-disable-next-line @typescript-eslint/no-shadow
 			Array.from(node.childNodes).forEach((element) => {
 				highlightRecursive(element);
 			});
@@ -75,6 +76,7 @@ export const highlight = (element: HTMLElement, regex: string | RegExp) => {
  */
 export const removeHighlight = (el: HTMLElement) => {
 	const elements = el.querySelectorAll('span.highlight');
+	// eslint-disable-next-line @typescript-eslint/no-shadow
 	Array.prototype.forEach.call(elements, function (el: HTMLElement) {
 		const parent = el.parentNode as Node;
 		parent.replaceChild(el.firstChild as Node, el);

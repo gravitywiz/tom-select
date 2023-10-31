@@ -87,10 +87,13 @@ export const debounce_events = (
 
 	// override trigger method
 	self.trigger = function () {
+		// eslint-disable-next-line @typescript-eslint/no-shadow, prefer-rest-params
 		const type = arguments[0];
 		if (types.indexOf(type) !== -1) {
+			// eslint-disable-next-line prefer-rest-params
 			event_args[type] = arguments;
 		} else {
+			// eslint-disable-next-line prefer-rest-params
 			return trigger.apply(self, arguments);
 		}
 	};

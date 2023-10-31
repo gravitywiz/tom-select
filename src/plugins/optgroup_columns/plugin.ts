@@ -23,7 +23,7 @@ export default function (this: TomSelect) {
 	const orig_keydown = self.onKeyDown;
 
 	self.hook('instead', 'onKeyDown', (evt: KeyboardEvent) => {
-		let index, option, options, optgroup;
+		let optgroup;
 
 		if (
 			!self.isOpen ||
@@ -37,7 +37,8 @@ export default function (this: TomSelect) {
 
 		self.ignoreHover = true;
 		optgroup = parentMatch(self.activeOption, '[data-group]');
-		index = nodeIndex(self.activeOption, '[data-selectable]');
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const index = nodeIndex(self.activeOption, '[data-selectable]');
 
 		if (!optgroup) {
 			return;
@@ -53,10 +54,12 @@ export default function (this: TomSelect) {
 			return;
 		}
 
-		options = (<HTMLOptGroupElement>optgroup).querySelectorAll(
+		const options = (<HTMLOptGroupElement>optgroup).querySelectorAll(
 			'[data-selectable]'
 		);
-		option = options[Math.min(options.length - 1, index)] as HTMLElement;
+		const option = options[
+			Math.min(options.length - 1, index)
+		] as HTMLElement;
 
 		if (option) {
 			self.setActiveOption(option);

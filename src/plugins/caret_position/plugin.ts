@@ -36,6 +36,7 @@ export default function (this: TomSelect) {
 		} else {
 			new_pos = Math.max(0, Math.min(self.items.length, new_pos));
 
+			// eslint-disable-next-line eqeqeq
 			if (new_pos != self.caretPos && !self.isPending) {
 				self.controlChildren().forEach((child, j) => {
 					if (j < new_pos) {

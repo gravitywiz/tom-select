@@ -67,8 +67,8 @@ export const addClasses = (
 	const norm_classes = classesArray(classes);
 	elmts = castAsArray(elmts);
 
-	elmts.map((el) => {
-		norm_classes.map((cls) => {
+	elmts.forEach((el) => {
+		norm_classes.forEach((cls) => {
 			el.classList.add(cls);
 		});
 	});
@@ -85,8 +85,8 @@ export const removeClasses = (
 	const norm_classes = classesArray(classes);
 	elmts = castAsArray(elmts);
 
-	elmts.map((el) => {
-		norm_classes.map((cls) => {
+	elmts.forEach((el) => {
+		norm_classes.forEach((cls) => {
 			el.classList.remove(cls);
 		});
 	});
@@ -199,6 +199,7 @@ export const setAttr = (
 	attrs: { [key: string]: null | string | number }
 ) => {
 	iterate(attrs, (val, attr) => {
+		// eslint-disable-next-line eqeqeq
 		if (val == null) {
 			el.removeAttribute(attr as string);
 		} else {

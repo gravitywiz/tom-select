@@ -1,3 +1,5 @@
+import type * as SifterTypes from '@orchidjs/sifter/dist/types/types';
+
 import {
 	TomCreateFilter,
 	TomCreate,
@@ -7,7 +9,6 @@ import {
 } from './index';
 
 import { TPluginItem, TPluginHash } from '../contrib/microplugin';
-import * as SifterTypes from '@orchidjs/sifter/dist/types/types';
 
 export type TomSettings = {
 	options?: any[];

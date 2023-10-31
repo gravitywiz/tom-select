@@ -104,7 +104,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		instance_i++;
 
-		let dir;
 		const input = getDom(input_arg) as TomInput;
 
 		if (input.tomselect) {
@@ -116,7 +115,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		// detect rtl environment
 		const computedStyle =
 			window.getComputedStyle && window.getComputedStyle(input, null);
-		dir = computedStyle.getPropertyValue('direction');
+		const dir = computedStyle.getPropertyValue('direction');
 
 		// setup default state
 		const settings = getSettings(input, user_settings);
@@ -152,6 +151,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			}
 
 			if (filter instanceof RegExp) {
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				settings.createFilter = (input) =>
 					(filter as RegExp).test(input);
 			} else {
@@ -348,7 +348,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			}
 
 			// retain focus (see control_input mousedown)
-			if (control_input.value != '') {
+			if (control_input.value !== '') {
 				return;
 			}
 
@@ -391,6 +391,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			// event target is the input it should not be modified.
 			// otherwise, text selection within the input won't work.
 			// Fixes bug #212 which is no covered by tests
+			// eslint-disable-next-line eqeqeq
 			if (target == control_input && self.isOpen) {
 				evt.stopPropagation();
 
@@ -703,6 +704,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			// ctrl+A: select all
 			case constants.KEY_A:
 				if (isKeyDown(constants.KEY_SHORTCUT, e)) {
+					// eslint-disable-next-line eqeqeq
 					if (self.control_input.value == '') {
 						preventDefault(e);
 						self.selectAll();
@@ -756,6 +758,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 					// don't submit form when searching for a value
 				} else if (
+					// eslint-disable-next-line @wordpress/no-global-active-element, eqeqeq
 					document.activeElement == self.control_input &&
 					self.isOpen
 				) {
@@ -909,8 +912,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	onOptionSelect(evt: MouseEvent | KeyboardEvent, option: HTMLElement) {
-		let value,
-			self = this;
+		const self = this;
+		let value;
 
 		// should not be possible to trigger a option under a disabled optgroup
 		if (
@@ -1108,7 +1111,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 */
 	setActiveItem(item?: TomItem, e?: MouseEvent | KeyboardEvent) {
 		const self = this;
-		let eventName;
 		let i, begin, end, swap;
 		let last;
 
@@ -1126,7 +1128,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		}
 
 		// modify selection
-		eventName = e && e.type.toLowerCase();
+		const eventName = e && e.type.toLowerCase();
 
 		if (
 			eventName === 'click' &&
@@ -1183,6 +1185,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		addClasses(item, 'active last-active');
 		self.trigger('item_select', item);
+		// eslint-disable-next-line eqeqeq
 		if (self.activeItems.indexOf(item) == -1) {
 			self.activeItems.push(item);
 		}
@@ -1478,15 +1481,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	refreshOptions(triggerDropdown: boolean = true) {
-		let i,
-			j,
-			k,
-			n,
-			optgroup,
-			optgroups,
-			html: DocumentFragment,
-			has_create_option,
-			active_group;
+		let i, j, k, n, optgroup, optgroups, active_group;
 		let create;
 		const groups: { [key: string]: DocumentFragment } = {};
 
@@ -1494,9 +1489,10 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const self = this;
 		const query = self.inputValue();
 		const same_query =
+			// eslint-disable-next-line eqeqeq
 			query === self.lastQuery || (query == '' && self.lastQuery == null);
 		const results = self.search(query);
-		let active_option = null;
+		let active_option: HTMLElement | null = null;
 		let show_dropdown = self.settings.shouldOpen || false;
 		const dropdown_content = self.dropdown_content;
 
@@ -1574,6 +1570,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 					// make sure we keep the activeOption in the same group
 					if (
 						self.activeOption &&
+						// eslint-disable-next-line eqeqeq
 						self.activeOption.dataset.value == opt_value
 					) {
 						if (
@@ -1602,7 +1599,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		}
 
 		// render optgroup headers & join groups
-		html = document.createDocumentFragment();
+		const html = document.createDocumentFragment();
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		iterate(groups_order, (optgroup: string) => {
 			const group_fragment = groups[optgroup];
 
@@ -1669,7 +1667,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		}
 
 		// add create option
-		has_create_option = self.canCreate(query);
+		const has_create_option = self.canCreate(query);
 		if (has_create_option) {
 			create = add_template('option_create');
 		}
@@ -1681,6 +1679,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				if (
 					!active_option &&
 					self.settings.mode === 'single' &&
+					// eslint-disable-next-line eqeqeq
 					self.items[0] != undefined
 				) {
 					active_option = self.getOption(self.items[0]);
@@ -1840,6 +1839,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		let index_item;
 
 		const value_old = hash_key(value);
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const value_new = hash_key(data[self.settings.valueField]);
 
 		// sanity checks
@@ -1849,6 +1849,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		const data_old = self.options[value_old];
 
+		// eslint-disable-next-line eqeqeq
 		if (data_old == undefined) {
 			return;
 		}
@@ -1967,6 +1968,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		}
 
 		const option = this.options[hashed];
+		// eslint-disable-next-line eqeqeq
 		if (option != undefined) {
 			if (option.$div) {
 				return option.$div;
@@ -1990,13 +1992,14 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		direction: number,
 		type: string = 'option'
 	): HTMLElement | null {
-		let self = this,
-			all;
+		const self = this;
+		let all;
 
 		if (!option) {
 			return null;
 		}
 
+		// eslint-disable-next-line eqeqeq
 		if (type == 'item') {
 			all = self.controlChildren();
 		} else {
@@ -2004,6 +2007,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		}
 
 		for (let i = 0; i < all.length; i++) {
+			// eslint-disable-next-line eqeqeq
 			if (all[i] != option) {
 				continue;
 			}
@@ -2059,7 +2063,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const events = silent ? [] : ['change', 'dropdown_close'];
 
 		debounce_events(this, events, () => {
-			let item, wasFull;
+			let item;
 			const self = this;
 			const inputMode = self.settings.mode;
 			const hashed = hash_key(value);
@@ -2091,7 +2095,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				item = item.cloneNode(true) as HTMLElement;
 			}
 
-			wasFull = self.isFull();
+			const wasFull = self.isFull();
 			self.items.splice(self.caretPos, 0, hashed);
 			self.insertAtCaret(item);
 
@@ -2114,6 +2118,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				}
 
 				// hide the menu if the maximum number of items have been selected or no options are left
+				// eslint-disable-next-line eqeqeq
 				if (self.settings.closeAfterSelect != false && self.isFull()) {
 					self.close();
 				} else if (!self.isPending) {
@@ -2147,9 +2152,9 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			return;
 		}
 
-		let i, idx;
+		let idx;
 		const value = item.dataset.value;
-		i = nodeIndex(item);
+		const i = nodeIndex(item);
 
 		item.remove();
 		if (item.classList.contains('active')) {
@@ -2189,6 +2194,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	): boolean {
 		// triggerDropdown parameter @deprecated 2.1.1
 		if (arguments.length === 3) {
+			// eslint-disable-next-line prefer-rest-params
 			callback = arguments[2];
 		}
 		if (typeof callback !== 'function') {
@@ -2342,6 +2348,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			function AddSelected(
 				option_el: HTMLOptionElement | null,
 				value: string,
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				label: string
 			): HTMLOptionElement {
 				if (!option_el) {
@@ -2356,6 +2363,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 				// don't move empty option from top of list
 				// fixes bug in firefox https://bugzilla.mozilla.org/show_bug.cgi?id=1725293
+				// eslint-disable-next-line eqeqeq
 				if (option_el != empty_option) {
 					self.input.append(option_el);
 				}
@@ -2364,6 +2372,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 				// marking empty option as selected can break validation
 				// fixes https://github.com/orchidjs/tom-select/issues/303
+				// eslint-disable-next-line eqeqeq
 				if (option_el != empty_option || has_selected > 0) {
 					option_el.selected = true;
 				}
@@ -2379,6 +2388,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				});
 
 			// nothing selected?
+			// eslint-disable-next-line eqeqeq
 			if (self.items.length == 0 && self.settings.mode == 'single') {
 				AddSelected(empty_option, '', '');
 
@@ -2531,11 +2541,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	deleteSelection(e: KeyboardEvent): boolean {
-		let direction, selection, caret, tail;
+		let caret, tail;
 		const self = this;
 
-		direction = e && e.keyCode === constants.KEY_BACKSPACE ? -1 : 1;
-		selection = getSelection(self.control_input);
+		const direction = e && e.keyCode === constants.KEY_BACKSPACE ? -1 : 1;
+		const selection = getSelection(self.control_input);
 
 		// determine items that will be removed
 		const rm_items: TomItem[] = [];
@@ -2621,9 +2631,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	advanceSelection(direction: number, e?: MouseEvent | KeyboardEvent) {
-		let last_active,
-			adjacent,
-			self = this;
+		const self = this;
+		let last_active, adjacent;
 
 		if (self.rtl) {
 			direction *= -1;
@@ -2838,6 +2847,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	_render(templateName: TomTemplateNames, data?: any): HTMLElement {
 		const html = this.render(templateName, data);
 
+		// eslint-disable-next-line eqeqeq
 		if (html == null) {
 			throw 'HTMLElement expected';
 		}
@@ -2895,19 +2905,22 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const orig_method = self[method];
 
 		self[method] = function () {
-			let result, result_new;
+			let result;
 
 			if (when === 'after') {
+				// eslint-disable-next-line prefer-rest-params
 				result = orig_method.apply(self, arguments);
 			}
 
-			result_new = new_fn.apply(self, arguments);
+			// eslint-disable-next-line prefer-rest-params
+			const result_new = new_fn.apply(self, arguments);
 
 			if (when === 'instead') {
 				return result_new;
 			}
 
 			if (when === 'before') {
+				// eslint-disable-next-line prefer-rest-params
 				result = orig_method.apply(self, arguments);
 			}
 

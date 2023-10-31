@@ -46,7 +46,7 @@ export default function (this: TomSelect) {
 	});
 
 	self.on('initialize', () => {
-		var $control = $(self.control).sortable({
+		const $control = $(self.control).sortable({
 			items: '[data-value]',
 			forcePlaceholderSize: true,
 			disabled: self.isLocked,
