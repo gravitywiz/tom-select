@@ -17,82 +17,82 @@ import TomSelect from '../../tom-select';
 import { TomOption } from '../../types/index';
 import { addClasses } from '../../vanilla';
 
-export default function(this:TomSelect) {
-	const self							= this;
-	const orig_canLoad					= self.canLoad;
-	const orig_clearActiveOption		= self.clearActiveOption;
-	const orig_loadCallback				= self.loadCallback;
+export default function (this: TomSelect) {
+	const self = this;
+	const orig_canLoad = self.canLoad;
+	const orig_clearActiveOption = self.clearActiveOption;
+	const orig_loadCallback = self.loadCallback;
 
-	var pagination:{[key:string]:any}	= {};
-	var dropdown_content:HTMLElement;
-	var loading_more					= false;
-	var load_more_opt:HTMLElement;
-	var default_values: string[]		= [];
+	let pagination: { [key: string]: any } = {};
+	let dropdown_content: HTMLElement;
+	let loading_more = false;
+	let load_more_opt: HTMLElement;
+	let default_values: string[] = [];
 
-	if( !self.settings.shouldLoadMore ){
-
+	if (!self.settings.shouldLoadMore) {
 		// return true if additional results should be loaded
-		self.settings.shouldLoadMore = ():boolean=>{
-
-			const scroll_percent = dropdown_content.clientHeight / (dropdown_content.scrollHeight - dropdown_content.scrollTop);
-			if( scroll_percent > 0.9 ){
+		self.settings.shouldLoadMore = (): boolean => {
+			const scroll_percent =
+				dropdown_content.clientHeight /
+				(dropdown_content.scrollHeight - dropdown_content.scrollTop);
+			if (scroll_percent > 0.9) {
 				return true;
 			}
 
-			if( self.activeOption ){
-				var selectable	= self.selectable();
-				var index		= Array.from(selectable).indexOf(self.activeOption);
-				if( index >= (selectable.length-2) ){
+			if (self.activeOption) {
+				const selectable = self.selectable();
+				const index = Array.from(selectable).indexOf(self.activeOption);
+				if (index >= selectable.length - 2) {
 					return true;
 				}
 			}
 
 			return false;
-		}
+		};
 	}
 
-
-	if( !self.settings.firstUrl ){
+	if (!self.settings.firstUrl) {
 		throw 'virtual_scroll plugin requires a firstUrl() method';
 	}
 
-
 	// in order for virtual scrolling to work,
 	// options need to be ordered the same way they're returned from the remote data source
-	self.settings.sortField			= [{field:'$order'},{field:'$score'}];
-
+	self.settings.sortField = [{ field: '$order' }, { field: '$score' }];
 
 	// can we load more results for given query?
-	const canLoadMore = (query:string):boolean => {
-
-		if( typeof self.settings.maxOptions === 'number' && dropdown_content.children.length >= self.settings.maxOptions ){
+	const canLoadMore = (query: string): boolean => {
+		if (
+			typeof self.settings.maxOptions === 'number' &&
+			dropdown_content.children.length >= self.settings.maxOptions
+		) {
 			return false;
 		}
 
-		if( (query in pagination) && pagination[query] ){
+		if (query in pagination && pagination[query]) {
 			return true;
 		}
 
 		return false;
 	};
 
-	const clearFilter = (option:TomOption, value:string):boolean => {
-		if( self.items.indexOf(value) >= 0 || default_values.indexOf(value) >= 0 ){
+	const clearFilter = (option: TomOption, value: string): boolean => {
+		if (
+			self.items.indexOf(value) >= 0 ||
+			default_values.indexOf(value) >= 0
+		) {
 			return true;
 		}
 		return false;
 	};
-
 
 	// set the next url that will be
-	self.setNextUrl = (value:string,next_url:any):void => {
+	self.setNextUrl = (value: string, next_url: any): void => {
 		pagination[value] = next_url;
 	};
 
 	// getUrl() to be used in settings.load()
-	self.getUrl = (query:string):any =>{
-
-		if( query in pagination ){
+	self.getUrl = (query: string): any => {
+		if (query in pagination) {
 			const next_url = pagination[query];
 			pagination[query] = false;
 			return next_url;
@@ -102,15 +102,13 @@ export default function(this:TomSelect) {
 		// we need to load the first page again
 		pagination = {};
 
-		return self.settings.firstUrl.call(self,query);
+		return self.settings.firstUrl.call(self, query);
 	};
-
 
 	// don't clear the active option (and cause unwanted dropdown scroll)
 	// while loading more results
-	self.hook('instead','clearActiveOption',()=>{
-
-		if( loading_more ){
+	self.hook('instead', 'clearActiveOption', () => {
+		if (loading_more) {
 			return;
 		}
 
@@ -118,98 +116,99 @@ export default function(this:TomSelect) {
 	});
 
 	// override the canLoad method
-	self.hook('instead','canLoad',(query:string)=>{
-
+	self.hook('instead', 'canLoad', (query: string) => {
 		// first time the query has been seen
-		if( !(query in pagination) ){
-			return orig_canLoad.call(self,query);
+		if (!(query in pagination)) {
+			return orig_canLoad.call(self, query);
 		}
 
 		return canLoadMore(query);
 	});
 
-
 	// wrap the load
-	self.hook('instead','loadCallback',( options:TomOption[], optgroups:TomOption[])=>{
-
-		if( !loading_more ){
-			self.clearOptions(clearFilter);
-		}else if( load_more_opt ){
-			const first_option = options[0];
-			if( first_option !== undefined ){
-				load_more_opt.dataset.value		= first_option[self.settings.valueField];
+	self.hook(
+		'instead',
+		'loadCallback',
+		(options: TomOption[], optgroups: TomOption[]) => {
+			if (!loading_more) {
+				self.clearOptions(clearFilter);
+			} else if (load_more_opt) {
+				const first_option = options[0];
+				if (first_option !== undefined) {
+					load_more_opt.dataset.value =
+						first_option[self.settings.valueField];
+				}
 			}
+
+			orig_loadCallback.call(self, options, optgroups);
+
+			loading_more = false;
 		}
-
-		orig_loadCallback.call( self, options, optgroups);
-
-		loading_more = false;
-	});
-
+	);
 
 	// add templates to dropdown
 	//	loading_more if we have another url in the queue
 	//	no_more_results if we don't have another url in the queue
-	self.hook('after','refreshOptions',()=>{
+	self.hook('after', 'refreshOptions', () => {
+		const query = self.lastValue;
+		let option;
 
-		const query		= self.lastValue;
-		var option;
-
-		if( canLoadMore(query) ){
-
-			option = self.render('loading_more',{query:query});
-			if( option ){
-				option.setAttribute('data-selectable',''); // so that navigating dropdown with [down] keypresses can navigate to this node
+		if (canLoadMore(query)) {
+			option = self.render('loading_more', { query });
+			if (option) {
+				option.setAttribute('data-selectable', ''); // so that navigating dropdown with [down] keypresses can navigate to this node
 				load_more_opt = option;
 			}
-
-		}else if( (query in pagination) && !dropdown_content.querySelector('.no-results') ){
-			option = self.render('no_more_results',{query:query});
+		} else if (
+			query in pagination &&
+			!dropdown_content.querySelector('.no-results')
+		) {
+			option = self.render('no_more_results', { query });
 		}
 
-		if( option ){
-			addClasses(option,self.settings.optionClass);
-			dropdown_content.append( option );
+		if (option) {
+			addClasses(option, self.settings.optionClass);
+			dropdown_content.append(option);
 		}
-
 	});
 
-
 	// add scroll listener and default templates
-	self.on('initialize',()=>{
+	self.on('initialize', () => {
 		default_values = Object.keys(self.options);
 		dropdown_content = self.dropdown_content;
 
 		// default templates
-		self.settings.render = Object.assign({}, {
-			loading_more:() => {
-				return `<div class="loading-more-results">Loading more results ... </div>`;
+		self.settings.render = Object.assign(
+			{},
+			{
+				loading_more: () => {
+					return `<div class="loading-more-results">Loading more results ... </div>`;
+				},
+				no_more_results: () => {
+					return `<div class="no-more-results">No more results</div>`;
+				},
 			},
-			no_more_results:() =>{
-				return `<div class="no-more-results">No more results</div>`;
-			}
-		},self.settings.render);
-
+			self.settings.render
+		);
 
 		// watch dropdown content scroll position
-		dropdown_content.addEventListener('scroll',()=>{
-
-			if( !self.settings.shouldLoadMore.call(self) ){
+		dropdown_content.addEventListener('scroll', () => {
+			if (!self.settings.shouldLoadMore.call(self)) {
 				return;
 			}
 
 			// !important: this will get checked again in load() but we still need to check here otherwise loading_more will be set to true
-			if( !canLoadMore(self.lastValue) ){
+			if (!canLoadMore(self.lastValue)) {
 				return;
 			}
 
 			// don't call load() too much
-			if( loading_more ) return;
-
+			if (loading_more) {
+				return;
+			}
 
 			loading_more = true;
-			self.load.call(self,self.lastValue);
+			self.load.call(self, self.lastValue);
 		});
 	});
-
-};
+}

@@ -16,29 +16,31 @@ import TomSelect from '../../tom-select';
 import { TomOption } from '../../types/index';
 
 type TPluginOptions = {
-	text?:(option:TomOption)=>string,
+	text?: (option: TomOption) => string;
 };
 
-export default function(this:TomSelect, userOptions:TPluginOptions) {
+export default function (this: TomSelect, userOptions: TPluginOptions) {
 	const self = this;
 
-	const options = Object.assign({
-		text: (option:TomOption) => {
-			return option[self.settings.labelField];
-		}
-	},userOptions);
+	const options = Object.assign(
+		{
+			text: (option: TomOption) => {
+				return option[self.settings.labelField];
+			},
+		},
+		userOptions
+	);
 
-	self.on('item_remove',function(value:string){
-		if( !self.isFocused ){
+	self.on('item_remove', function (value: string) {
+		if (!self.isFocused) {
 			return;
 		}
 
-		if( self.control_input.value.trim() === '' ){
-			var option = self.options[value];
-			if( option ){
+		if (self.control_input.value.trim() === '') {
+			const option = self.options[value];
+			if (option) {
 				self.setTextboxValue(options.text.call(self, option));
 			}
 		}
 	});
-
-};
+}

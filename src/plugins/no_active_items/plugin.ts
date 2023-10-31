@@ -14,7 +14,7 @@
 
 import TomSelect from '../../tom-select';
 
-export default function(this:TomSelect) {
-	this.hook('instead','setActiveItem',() => {});
-	this.hook('instead','selectAll',() => {});
-};
+export default function (this: TomSelect) {
+	this.hook('instead', 'setActiveItem', () => {});
+	this.hook('instead', 'selectAll', () => {});
+}

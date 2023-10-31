@@ -1,7 +1,5 @@
-
 import TomSelect from './tom-select';
 import { TomLoadCallback } from './types/index';
-
 
 /**
  * Converts a scalar to its best string representation
@@ -17,13 +15,19 @@ import { TomLoadCallback } from './types/index';
  *   1         -> '1'
  *
  */
-export const hash_key = (value:undefined|null|boolean|string|number):string|null => {
-	if (typeof value === 'undefined' || value === null) return null;
+export const hash_key = (
+	value: undefined | null | boolean | string | number
+): string | null => {
+	if (typeof value === 'undefined' || value === null) {
+		return null;
+	}
 	return get_hash(value);
 };
 
-export const get_hash = (value:boolean|string|number):string => {
-	if (typeof value === 'boolean') return value ? '1' : '0';
+export const get_hash = (value: boolean | string | number): string => {
+	if (typeof value === 'boolean') {
+		return value ? '1' : '0';
+	}
 	return value + '';
 };
 
@@ -31,7 +35,7 @@ export const get_hash = (value:boolean|string|number):string => {
  * Escapes a string for use within HTML.
  *
  */
-export const escape_html = (str:string):string => {
+export const escape_html = (str: string): string => {
 	return (str + '')
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
@@ -39,43 +43,51 @@ export const escape_html = (str:string):string => {
 		.replace(/"/g, '&quot;');
 };
 
-
 /**
  * Debounce the user provided load function
  *
  */
-export const loadDebounce = (fn:(value:string,callback:TomLoadCallback) => void,delay:number) => {
-	var timeout: null|ReturnType<typeof setTimeout>;
-	return function(this:TomSelect, value:string,callback:TomLoadCallback) {
-		var self = this;
+export const loadDebounce = (
+	fn: (value: string, callback: TomLoadCallback) => void,
+	delay: number
+) => {
+	let timeout: null | ReturnType<typeof setTimeout>;
+	return function (
+		this: TomSelect,
+		value: string,
+		callback: TomLoadCallback
+	) {
+		const self = this;
 
-		if( timeout ){
+		if (timeout) {
 			self.loading = Math.max(self.loading - 1, 0);
 			clearTimeout(timeout);
 		}
-		timeout = setTimeout(function() {
+		timeout = setTimeout(function () {
 			timeout = null;
 			self.loadedSearches[value] = true;
 			fn.call(self, value, callback);
-
 		}, delay);
 	};
 };
-
 
 /**
  * Debounce all fired events types listed in `types`
  * while executing the provided `fn`.
  *
  */
-export const debounce_events = ( self:TomSelect, types:string[], fn:() => void ) => {
-	var type:string;
-	var trigger = self.trigger;
-	var event_args:{ [key: string]: any } = {};
+export const debounce_events = (
+	self: TomSelect,
+	types: string[],
+	fn: () => void
+) => {
+	let type: string;
+	const trigger = self.trigger;
+	const event_args: { [key: string]: any } = {};
 
 	// override trigger method
-	self.trigger = function(){
-		var type = arguments[0];
+	self.trigger = function () {
+		const type = arguments[0];
 		if (types.indexOf(type) !== -1) {
 			event_args[type] = arguments;
 		} else {
@@ -88,13 +100,12 @@ export const debounce_events = ( self:TomSelect, types:string[], fn:() => void )
 	self.trigger = trigger;
 
 	// trigger queued events
-	for( type of types ){
-		if( type in event_args ){
+	for (type of types) {
+		if (type in event_args) {
 			trigger.apply(self, event_args[type]);
 		}
 	}
 };
-
 
 /**
  * Determines the current selection within a text input control.
@@ -103,36 +114,40 @@ export const debounce_events = ( self:TomSelect, types:string[], fn:() => void )
  *   - length
  *
  */
-export const getSelection = (input:HTMLInputElement):{ start: number; length: number } => {
+export const getSelection = (
+	input: HTMLInputElement
+): { start: number; length: number } => {
 	return {
-		start	: input.selectionStart || 0,
-		length	: (input.selectionEnd||0) - (input.selectionStart||0),
+		start: input.selectionStart || 0,
+		length: (input.selectionEnd || 0) - (input.selectionStart || 0),
 	};
 };
-
 
 /**
  * Prevent default
  *
  */
-export const preventDefault = (evt?:Event, stop:boolean=false):void => {
-	if( evt ){
+export const preventDefault = (evt?: Event, stop: boolean = false): void => {
+	if (evt) {
 		evt.preventDefault();
-		if( stop ){
+		if (stop) {
 			evt.stopPropagation();
 		}
 	}
-}
-
+};
 
 /**
  * Add event helper
  *
  */
-export const addEvent = (target:EventTarget, type:string, callback:EventListenerOrEventListenerObject, options?:object):void => {
-	target.addEventListener(type,callback,options);
+export const addEvent = (
+	target: EventTarget,
+	type: string,
+	callback: EventListenerOrEventListenerObject,
+	options?: object
+): void => {
+	target.addEventListener(type, callback, options);
 };
-
 
 /**
  * Return true if the requested key is down
@@ -140,52 +155,61 @@ export const addEvent = (target:EventTarget, type:string, callback:EventListener
  * The current evt may not always set ( eg calling advanceSelection() )
  *
  */
-export const isKeyDown = ( key_name:keyof (KeyboardEvent|MouseEvent), evt?:KeyboardEvent|MouseEvent ) => {
-
-	if( !evt ){
+export const isKeyDown = (
+	key_name: keyof (KeyboardEvent | MouseEvent),
+	evt?: KeyboardEvent | MouseEvent
+) => {
+	if (!evt) {
 		return false;
 	}
 
-	if( !evt[key_name] ){
+	if (!evt[key_name]) {
 		return false;
 	}
 
-	var count = (evt.altKey?1:0) + (evt.ctrlKey?1:0) + (evt.shiftKey?1:0) + (evt.metaKey?1:0);
+	const count =
+		(evt.altKey ? 1 : 0) +
+		(evt.ctrlKey ? 1 : 0) +
+		(evt.shiftKey ? 1 : 0) +
+		(evt.metaKey ? 1 : 0);
 
-	if( count === 1 ){
+	if (count === 1) {
 		return true;
 	}
 
 	return false;
 };
 
-
 /**
  * Get the id of an element
  * If the id attribute is not set, set the attribute with the given id
  *
  */
-export const getId = (el:Element,id:string) => {
+export const getId = (el: Element, id: string) => {
 	const existing_id = el.getAttribute('id');
-	if( existing_id ){
+	if (existing_id) {
 		return existing_id;
 	}
 
-	el.setAttribute('id',id);
+	el.setAttribute('id', id);
 	return id;
 };
-
 
 /**
  * Returns a string with backslashes added before characters that need to be escaped.
  */
-export const addSlashes = (str:string):string => {
+export const addSlashes = (str: string): string => {
 	return str.replace(/[\\"']/g, '\\$&');
 };
 
 /**
  *
  */
-export const append = ( parent:Element|DocumentFragment, node: string|Node|null|undefined ):void =>{
-	if( node ) parent.append(node);
+export const append = (
+	parent: Element | DocumentFragment,
+	node: string | Node | null | undefined
+): void => {
+	if (node) {
+		parent.append(node);
+	}
 };

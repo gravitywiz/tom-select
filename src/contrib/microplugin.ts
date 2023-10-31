@@ -15,47 +15,44 @@
  */
 
 type TSettings = {
-	[key:string]:any
-}
-
-type TPlugins = {
-	names: string[],
-	settings: TSettings,
-	requested: {[key:string]:boolean},
-	loaded: {[key:string]:any}
+	[key: string]: any;
 };
 
-export type TPluginItem = {name:string,options:{}};
-export type TPluginHash = {[key:string]:{}};
+type TPlugins = {
+	names: string[];
+	settings: TSettings;
+	requested: { [key: string]: boolean };
+	loaded: { [key: string]: any };
+};
 
+export type TPluginItem = { name: string; options: {} };
+export type TPluginHash = { [key: string]: {} };
 
-
-
-export default function MicroPlugin(Interface: any ){
-
+export default function MicroPlugin(Interface: any) {
 	Interface.plugins = {};
 
-	return class extends Interface{
-
-		public plugins:TPlugins = {
-			names     : [],
-			settings  : {},
-			requested : {},
-			loaded    : {}
+	return class extends Interface {
+		public plugins: TPlugins = {
+			names: [],
+			settings: {},
+			requested: {},
+			loaded: {},
 		};
 
 		/**
 		 * Registers a plugin.
 		 *
-		 * @param {function} fn
+		 * @param {Function} fn
 		 */
-		static define(name:string, fn:(this:any,settings:TSettings)=>any){
+		static define(
+			name: string,
+			fn: (this: any, settings: TSettings) => any
+		) {
 			Interface.plugins[name] = {
-				'name' : name,
-				'fn'   : fn
+				name,
+				fn,
 			};
 		}
-
 
 		/**
 		 * Initializes the listed plugins (with options).
@@ -70,15 +67,15 @@ export default function MicroPlugin(Interface: any ){
 		 * Hash (with options):
 		 *   {'a': { ... }, 'b': { ... }, 'c': { ... }}
 		 *
-		 * @param {array|object} plugins
+		 * @param {Array | object} plugins
 		 */
-		initializePlugins(plugins:string[]|TPluginItem[]|TPluginHash) {
-			var key, name;
-			const self  = this;
-			const queue:string[] = [];
+		initializePlugins(plugins: string[] | TPluginItem[] | TPluginHash) {
+			let key, name;
+			const self = this;
+			const queue: string[] = [];
 
 			if (Array.isArray(plugins)) {
-				plugins.forEach((plugin:string|TPluginItem)=>{
+				plugins.forEach((plugin: string | TPluginItem) => {
 					if (typeof plugin === 'string') {
 						queue.push(plugin);
 					} else {
@@ -95,22 +92,24 @@ export default function MicroPlugin(Interface: any ){
 				}
 			}
 
-			while( name = queue.shift() ){
+			while ((name = queue.shift())) {
 				self.require(name);
 			}
 		}
 
-		loadPlugin(name:string) {
-			var self    = this;
-			var plugins = self.plugins;
-			var plugin  = Interface.plugins[name];
+		loadPlugin(name: string) {
+			const self = this;
+			const plugins = self.plugins;
+			const plugin = Interface.plugins[name];
 
 			if (!Interface.plugins.hasOwnProperty(name)) {
-				throw new Error('Unable to find "' +  name + '" plugin');
+				throw new Error('Unable to find "' + name + '" plugin');
 			}
 
 			plugins.requested[name] = true;
-			plugins.loaded[name] = plugin.fn.apply(self, [self.plugins.settings[name] || {}]);
+			plugins.loaded[name] = plugin.fn.apply(self, [
+				self.plugins.settings[name] || {},
+			]);
 			plugins.names.push(name);
 		}
 
@@ -118,20 +117,20 @@ export default function MicroPlugin(Interface: any ){
 		 * Initializes a plugin.
 		 *
 		 */
-		require(name:string) {
-			var self = this;
-			var plugins = self.plugins;
+		require(name: string) {
+			const self = this;
+			const plugins = self.plugins;
 
 			if (!self.plugins.loaded.hasOwnProperty(name)) {
 				if (plugins.requested[name]) {
-					throw new Error('Plugin has circular dependency ("' + name + '")');
+					throw new Error(
+						'Plugin has circular dependency ("' + name + '")'
+					);
 				}
 				self.loadPlugin(name);
 			}
 
 			return plugins.loaded[name];
 		}
-
 	};
-
 }

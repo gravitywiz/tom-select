@@ -1,72 +1,80 @@
-
-
-
-describe('plugin: change_listener', function() {
-
-	function changeInput(input,value = null ){
-		if( value ){
+describe('plugin: change_listener', function () {
+	function changeInput(input, value = null) {
+		if (value) {
 			input.value = value;
 		}
-		var evt = document.createEvent('HTMLEvents');
+		const evt = document.createEvent('HTMLEvents');
 		evt.initEvent('change', false, true);
 		input.dispatchEvent(evt);
 	}
 
-	it_n('should update when original input is changed', async ()=> {
+	it_n('should update when original input is changed', async () => {
+		const test = setup_test('<input value="original">', {
+			plugins: ['change_listener'],
+		});
 
-		let test = setup_test('<input value="original">', {plugins: ['change_listener']});
+		assert.equal(Object.keys(test.instance.options).length, 1);
 
-		assert.equal( Object.keys(test.instance.options).length, 1);
+		const input = test.select;
 
-		var input = test.select;
-
-		changeInput(input,'new value');
+		changeInput(input, 'new value');
 		await waitFor(10);
-		assert.equal( Object.keys(test.instance.options).length, 2);
-		assert.equal( test.instance.items.length, 1,'should have one value = "new value"');
-		assert.equal( test.instance.items[0], 'new value');
-		assert.isFalse( test.instance.isFocused, 'should not focus');
+		assert.equal(Object.keys(test.instance.options).length, 2);
+		assert.equal(
+			test.instance.items.length,
+			1,
+			'should have one value = "new value"'
+		);
+		assert.equal(test.instance.items[0], 'new value');
+		assert.isFalse(test.instance.isFocused, 'should not focus');
 
 		test.instance.removeItem('new value');
 		await waitFor(10);
-		assert.equal( test.instance.items.length, 0);
+		assert.equal(test.instance.items.length, 0);
 
-		changeInput(input,'another value');
+		changeInput(input, 'another value');
 		await waitFor(10);
-		assert.equal( test.instance.items[0], 'another value');
-		assert.equal( test.instance.items.length, 1,'should have one value = "another value"');
+		assert.equal(test.instance.items[0], 'another value');
+		assert.equal(
+			test.instance.items.length,
+			1,
+			'should have one value = "another value"'
+		);
 	});
 
-	it_n('typing in input with delimiter = " "', async ()=>{
-
-		let test = setup_test('<input value="original">', {plugins: ['change_listener'],delimiter:' ',create:true});
+	it_n('typing in input with delimiter = " "', async () => {
+		const test = setup_test('<input value="original">', {
+			plugins: ['change_listener'],
+			delimiter: ' ',
+			create: true,
+		});
 
 		await asyncClick(test.instance.control);
-		assert.isTrue(test.instance.isFocused,'should be focused');
+		assert.isTrue(test.instance.isFocused, 'should be focused');
 
 		await asyncType('new[enter]');
 		await waitFor(10);
 
-		assert.equal(test.instance.control_input, document.activeElement,'should maintain input focus');
-		assert.equal(test.instance.items.length, 2,'should have two items');
+		assert.equal(
+			test.instance.control_input,
+			document.activeElement,
+			'should maintain input focus'
+		);
+		assert.equal(test.instance.items.length, 2, 'should have two items');
 		assert.equal(test.instance.items[0], 'original');
 		assert.equal(test.instance.items[1], 'new');
-
 	});
 
-	it_n('<option> added on original <select>', async ()=>{
-
-		let test	= setup_test('AB_Multi', {plugins: ['change_listener']});
-		var input	= test.select;
-		var opt		= new Option('new', 'new', true, true);
+	it_n('<option> added on original <select>', async () => {
+		const test = setup_test('AB_Multi', { plugins: ['change_listener'] });
+		const input = test.select;
+		const opt = new Option('new', 'new', true, true);
 		test.select.append(opt);
 
 		changeInput(input);
 		await waitFor(10);
 
-		assert.equal(test.instance.items.length, 1,'should have one item');
+		assert.equal(test.instance.items.length, 1, 'should have one item');
 		assert.equal(test.instance.items[0], 'new');
-
 	});
-
 });
