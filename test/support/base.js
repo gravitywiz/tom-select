@@ -32,6 +32,8 @@ const teardownLast = function () {
 	}
 };
 
+window.teardownLast = teardownLast;
+
 const test_html = {
 	AB_Multi:
 		'<select multiple><option value="a">a</option><option value="b">b</option><option value="c">c</option></select>',
