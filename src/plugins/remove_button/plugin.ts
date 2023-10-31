@@ -19,48 +19,62 @@ import { escape_html, preventDefault, addEvent } from '../../utils';
 import { TomOption, TomItem } from '../../types/index';
 import { RBOptions } from './types';
 
-export default function(this:TomSelect, userOptions:RBOptions) {
-
-	const options = Object.assign({
-			label     : '&times;',
-			title     : 'Remove',
-			className : 'remove',
-			append    : true
-		}, userOptions);
-
+export default function (this: TomSelect, userOptions: RBOptions) {
+	const options = Object.assign(
+		{
+			label: '&times;',
+			title: 'Remove',
+			className: 'remove',
+			append: true,
+		},
+		userOptions
+	);
 
 	//options.className = 'remove-single';
-	var self			= this;
+	const self = this;
 
 	// override the render method to add remove button to each item
-	if( !options.append ){
+	if (!options.append) {
 		return;
 	}
 
-	var html = '<a href="javascript:void(0)" class="' + options.className + '" tabindex="-1" title="' + escape_html(options.title) + '">' + options.label + '</a>';
+	const html =
+		'<a href="javascript:void(0)" class="' +
+		options.className +
+		'" tabindex="-1" title="' +
+		escape_html(options.title) +
+		'">' +
+		options.label +
+		'</a>';
 
-	self.hook('after','setupTemplates',() => {
+	self.hook('after', 'setupTemplates', () => {
+		const orig_render_item = self.settings.render.item;
 
-		var orig_render_item = self.settings.render.item;
+		self.settings.render.item = (
+			data: TomOption,
+			escape: typeof escape_html
+		) => {
+			const item = getDom(
+				orig_render_item.call(self, data, escape)
+			) as TomItem;
 
-		self.settings.render.item = (data:TomOption, escape:typeof escape_html) => {
-
-			var item = getDom(orig_render_item.call(self, data, escape)) as TomItem;
-
-			var close_button = getDom(html);
+			const close_button = getDom(html);
 			item.appendChild(close_button);
 
-			addEvent(close_button,'mousedown',(evt) => {
-				preventDefault(evt,true);
+			addEvent(close_button, 'mousedown', (evt) => {
+				preventDefault(evt, true);
 			});
 
-			addEvent(close_button,'click',(evt) => {
-
+			addEvent(close_button, 'click', (evt) => {
 				// propagating will trigger the dropdown to show for single mode
-				preventDefault(evt,true);
+				preventDefault(evt, true);
 
-				if( self.isLocked ) return;
-				if( !self.shouldDelete([item],evt as MouseEvent) ) return;
+				if (self.isLocked) {
+					return;
+				}
+				if (!self.shouldDelete([item], evt as MouseEvent)) {
+					return;
+				}
 
 				self.removeItem(item);
 				self.refreshOptions(false);
@@ -69,8 +83,5 @@ export default function(this:TomSelect, userOptions:RBOptions) {
 
 			return item;
 		};
-
 	});
-
-
-};
+}

@@ -16,9 +16,8 @@
 import TomSelect from '../../tom-select';
 import { nodeIndex, removeClasses } from '../../vanilla';
 
-
-export default function(this:TomSelect) {
-	var self = this;
+export default function (this: TomSelect) {
+	const self = this;
 
 	/**
 	 * Moves the caret to the specified index.
@@ -28,20 +27,24 @@ export default function(this:TomSelect) {
 	 * on mobile webkit devices
 	 *
 	 */
-	self.hook('instead','setCaret',(new_pos:number) => {
-
-		if( self.settings.mode === 'single' || !self.control.contains(self.control_input) ) {
+	self.hook('instead', 'setCaret', (new_pos: number) => {
+		if (
+			self.settings.mode === 'single' ||
+			!self.control.contains(self.control_input)
+		) {
 			new_pos = self.items.length;
 		} else {
 			new_pos = Math.max(0, Math.min(self.items.length, new_pos));
 
-			if( new_pos != self.caretPos && !self.isPending ){
-
-				self.controlChildren().forEach((child,j) => {
-					if( j < new_pos ){
-						self.control_input.insertAdjacentElement('beforebegin', child );
+			if (new_pos != self.caretPos && !self.isPending) {
+				self.controlChildren().forEach((child, j) => {
+					if (j < new_pos) {
+						self.control_input.insertAdjacentElement(
+							'beforebegin',
+							child
+						);
 					} else {
-						self.control.appendChild( child );
+						self.control.appendChild(child);
 					}
 				});
 			}
@@ -50,24 +53,22 @@ export default function(this:TomSelect) {
 		self.caretPos = new_pos;
 	});
 
-	self.hook('instead','moveCaret',(direction:number) => {
-
-		if( !self.isFocused ) return;
-
-		// move caret before or after selected items
-		const last_active		= self.getLastActive(direction);
-		if( last_active ){
-			const idx = nodeIndex(last_active);
-			self.setCaret(direction > 0 ? idx + 1: idx);
-			self.setActiveItem();
-			removeClasses(last_active as HTMLElement,'last-active');
-
-		// move caret left or right of current position
-		}else{
-			self.setCaret(self.caretPos + direction);
-
+	self.hook('instead', 'moveCaret', (direction: number) => {
+		if (!self.isFocused) {
+			return;
 		}
 
-	});
+		// move caret before or after selected items
+		const last_active = self.getLastActive(direction);
+		if (last_active) {
+			const idx = nodeIndex(last_active);
+			self.setCaret(direction > 0 ? idx + 1 : idx);
+			self.setActiveItem();
+			removeClasses(last_active as HTMLElement, 'last-active');
 
-};
+			// move caret left or right of current position
+		} else {
+			self.setCaret(self.caretPos + direction);
+		}
+	});
+}

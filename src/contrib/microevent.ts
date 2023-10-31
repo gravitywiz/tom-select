@@ -8,66 +8,67 @@
  * @author Jerome Etienne (https://github.com/jeromeetienne)
  */
 
-type TCallback = (...args:any) => any;
+type TCallback = (...args: any) => any;
 
 /**
  * Execute callback for each event in space separated list of event names
  *
  */
-function forEvents(events:string,callback:(event:string)=>any){
-	events.split(/\s+/).forEach((event) =>{
+function forEvents(events: string, callback: (event: string) => any) {
+	events.split(/\s+/).forEach((event) => {
 		callback(event);
 	});
 }
 
-export default class MicroEvent{
+export default class MicroEvent {
+	public _events: { [key: string]: TCallback[] };
 
-	public _events: {[key:string]:TCallback[]};
-
-	constructor(){
+	constructor() {
 		this._events = {};
 	}
 
-	on(events:string, fct:TCallback){
-		forEvents(events,(event) => {
+	on(events: string, fct: TCallback) {
+		forEvents(events, (event) => {
 			const event_array = this._events[event] || [];
 			event_array.push(fct);
 			this._events[event] = event_array;
 		});
 	}
 
-	off(events:string, fct:TCallback){
-		var n = arguments.length;
-		if( n === 0 ){
+	off(events: string, fct: TCallback) {
+		const n = arguments.length;
+		if (n === 0) {
 			this._events = {};
 			return;
 		}
 
-		forEvents(events,(event) => {
-
-			if (n === 1){
+		forEvents(events, (event) => {
+			if (n === 1) {
 				delete this._events[event];
-				return
+				return;
 			}
 
 			const event_array = this._events[event];
-			if( event_array === undefined ) return;
+			if (event_array === undefined) {
+				return;
+			}
 
 			event_array.splice(event_array.indexOf(fct), 1);
 			this._events[event] = event_array;
 		});
 	}
 
-	trigger(events:string, ...args:any){
-		var self = this;
+	trigger(events: string, ...args: any) {
+		const self = this;
 
-		forEvents(events,(event) => {
+		forEvents(events, (event) => {
 			const event_array = self._events[event];
-			if( event_array === undefined ) return;
-			event_array.forEach(fct => {
-				fct.apply(self, args );
+			if (event_array === undefined) {
+				return;
+			}
+			event_array.forEach((fct) => {
+				fct.apply(self, args);
 			});
-
 		});
 	}
-};
+}

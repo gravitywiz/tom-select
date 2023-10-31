@@ -17,45 +17,43 @@ import TomSelect from '../../tom-select';
 import { preventDefault, hash_key } from '../../utils';
 import { getDom } from '../../vanilla';
 
-
-export default function(this:TomSelect) {
-	var self = this;
-	var orig_onOptionSelect = self.onOptionSelect;
+export default function (this: TomSelect) {
+	const self = this;
+	const orig_onOptionSelect = self.onOptionSelect;
 
 	self.settings.hideSelected = false;
 
-
 	// update the checkbox for an option
-	var UpdateCheckbox = function(option:HTMLElement){
-		setTimeout(()=>{
-			var checkbox = option.querySelector('input');
-			if( checkbox instanceof HTMLInputElement ){
-				if( option.classList.contains('selected') ){
+	const UpdateCheckbox = function (option: HTMLElement) {
+		setTimeout(() => {
+			const checkbox = option.querySelector('input');
+			if (checkbox instanceof HTMLInputElement) {
+				if (option.classList.contains('selected')) {
 					checkbox.checked = true;
-				}else{
+				} else {
 					checkbox.checked = false;
 				}
 			}
-		},1);
+		}, 1);
 	};
 
 	// add checkbox to option template
-	self.hook('after','setupTemplates',() => {
-
-		var orig_render_option = self.settings.render.option;
+	self.hook('after', 'setupTemplates', () => {
+		const orig_render_option = self.settings.render.option;
 
 		self.settings.render.option = (data, escape_html) => {
-			var rendered = getDom(orig_render_option.call(self, data, escape_html));
-			var checkbox = document.createElement('input');
-			checkbox.addEventListener('click',function(evt){
+			const rendered = getDom(
+				orig_render_option.call(self, data, escape_html)
+			);
+			const checkbox = document.createElement('input');
+			checkbox.addEventListener('click', function (evt) {
 				preventDefault(evt);
 			});
 
 			checkbox.type = 'checkbox';
 			const hashed = hash_key(data[self.settings.valueField]);
 
-
-			if( hashed && self.items.indexOf(hashed) > -1 ){
+			if (hashed && self.items.indexOf(hashed) > -1) {
 				checkbox.checked = true;
 			}
 
@@ -65,39 +63,42 @@ export default function(this:TomSelect) {
 	});
 
 	// uncheck when item removed
-	self.on('item_remove',(value:string) => {
-		var option = self.getOption(value);
+	self.on('item_remove', (value: string) => {
+		const option = self.getOption(value);
 
-		if( option ){ // if dropdown hasn't been opened yet, the option won't exist
+		if (option) {
+			// if dropdown hasn't been opened yet, the option won't exist
 			option.classList.remove('selected'); // selected class won't be removed yet
 			UpdateCheckbox(option);
 		}
 	});
 
 	// check when item added
-	self.on('item_add',(value:string) => {
-		var option = self.getOption(value);
+	self.on('item_add', (value: string) => {
+		const option = self.getOption(value);
 
-		if( option ){ // if dropdown hasn't been opened yet, the option won't exist
+		if (option) {
+			// if dropdown hasn't been opened yet, the option won't exist
 			UpdateCheckbox(option);
 		}
 	});
 
-
 	// remove items when selected option is clicked
-	self.hook('instead','onOptionSelect',( evt:KeyboardEvent, option:HTMLElement )=>{
+	self.hook(
+		'instead',
+		'onOptionSelect',
+		(evt: KeyboardEvent, option: HTMLElement) => {
+			if (option.classList.contains('selected')) {
+				option.classList.remove('selected');
+				self.removeItem(option.dataset.value);
+				self.refreshOptions();
+				preventDefault(evt, true);
+				return;
+			}
 
-		if( option.classList.contains('selected') ){
-			option.classList.remove('selected')
-			self.removeItem(option.dataset.value);
-			self.refreshOptions();
-			preventDefault(evt,true);
-			return;
-        }
+			orig_onOptionSelect.call(self, evt, option);
 
-		orig_onOptionSelect.call(self, evt, option);
-
-		UpdateCheckbox(option);
-	});
-
-};
+			UpdateCheckbox(option);
+		}
+	);
+}

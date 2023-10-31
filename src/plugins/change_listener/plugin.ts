@@ -16,8 +16,8 @@
 import TomSelect from '../../tom-select';
 import { addEvent } from '../../utils';
 
-export default function(this:TomSelect) {
-	addEvent(this.input,'change',()=>{
+export default function (this: TomSelect) {
+	addEvent(this.input, 'change', () => {
 		this.sync();
 	});
-};
+}

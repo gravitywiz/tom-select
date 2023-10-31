@@ -1,4 +1,3 @@
-
 export default {
 	options: [],
 	optgroups: [],
@@ -56,7 +55,7 @@ export default {
 	placeholder: null,
 	hidePlaceholder: null,
 
-	shouldLoad: function(query:string):boolean{
+	shouldLoad(query: string): boolean {
 		return query.length > 0;
 	},
 
@@ -88,5 +87,5 @@ export default {
 		option: null,
 		option_create: null
 		*/
-	}
+	},
 };
