@@ -1,6 +1,6 @@
-var fs = require('fs');
-var path = require('path');
-var process = require('process');
+const path = require('path');
+const process = require('process');
+const fs = require('fs-extra');
 
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-clean');
@@ -31,7 +31,8 @@ module.exports = function(grunt) {
 		'postcss:prefix',
 		'postcss:min',
 		'replace:css_post',
-		'replace:scss_plugin_paths'
+		'replace:scss_plugin_paths',
+		'copy_built_js',
 	]);
 
 	grunt.registerTask('serve', [
@@ -39,7 +40,8 @@ module.exports = function(grunt) {
 		'builddocs',
 		'connect',
 		'check_doc_links',
-		'watch'
+		'watch',
+		'copy_built_js',
 	])
 
 	grunt.registerTask('builddocs',[
@@ -52,6 +54,18 @@ module.exports = function(grunt) {
 	]);
 
 
+	grunt.registerTask('copy_built_js', '', function() {
+		const buildDir = path.join(__dirname, 'build');
+		const distDir = path.join(__dirname, 'dist');
+		for (const folder of fs.readdirSync(buildDir)) {
+			fs.mkdirpSync(path.join(distDir, folder));
+
+			fs.copySync(
+				path.join(buildDir, folder),
+				path.join(distDir, folder),
+			);
+		}
+	});
 
 	/**
 	 * Check generated docs for broken links
@@ -339,6 +353,7 @@ module.exports = function(grunt) {
 				tasks: [
 					'build',
 					'shell:builddocs',
+					'copy_built_js'
 				]
 			}
 		}
