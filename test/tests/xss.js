@@ -5,11 +5,11 @@ const setup_xss_test = function (html, options, done) {
 	};
 
 	const test = setup_test(html, options);
-	var complete = function (err) {
+	window.complete = function (err) {
 		window.xss = function () {};
 		done(err);
 	};
-	var timeout = window.setTimeout(complete, 75);
+	const timeout = window.setTimeout(complete, 75);
 	return test;
 };
 

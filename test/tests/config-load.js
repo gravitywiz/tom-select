@@ -46,7 +46,7 @@ describe('load', function () {
 	it_n(
 		'should not show no_results message while/after loading',
 		function (done) {
-			var test = setup_test('<select>', {
+			const test = setup_test('<select>', {
 				load(query, load_cb) {
 					assert.equal(query, 'c');
 					setTimeout(function () {
@@ -90,7 +90,7 @@ describe('load', function () {
 
 					assert.equal(query, expected_load_query);
 
-					if (expected_load_queries.length == 0) {
+					if (expected_load_queries.length === 0) {
 						done();
 					}
 
@@ -126,13 +126,13 @@ describe('load', function () {
 				}
 			},
 			render: {
-				no_results: (data, escape) => {
+				no_results: (data) => {
 					if (data.input.length < 3) {
 						return;
 					}
 					return '<div class="no-results">No results found</div>';
 				},
-				loading: (data, escape) => {
+				loading: (data) => {
 					if (data.input.length < 3) {
 						return;
 					}

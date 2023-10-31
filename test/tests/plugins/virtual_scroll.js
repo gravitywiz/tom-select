@@ -144,6 +144,7 @@ describe('plugin: virtual_scroll', function () {
 			shouldLoadMore() {
 				if (
 					this.activeOption &&
+					// eslint-disable-next-line eqeqeq
 					this.activeOption ==
 						this.dropdown_content.querySelector(
 							'.loading-more-results'
@@ -184,8 +185,8 @@ describe('plugin: virtual_scroll', function () {
 		assert.equal(load_calls, 1);
 
 		// get index of loading_more tempalte
-		var selectable = test.instance.selectable();
-		var index = [].indexOf.call(selectable, loading_more);
+		let selectable = test.instance.selectable();
+		let index = [].indexOf.call(selectable, loading_more);
 
 		const len = test.instance.selectable().length - 1;
 		for (let i = 0; i < len; i++) {
@@ -194,8 +195,8 @@ describe('plugin: virtual_scroll', function () {
 
 		await waitFor(500); // wait for scroll + more data to load
 
-		var selectable = test.instance.selectable();
-		var index = [].indexOf.call(selectable, test.instance.activeOption);
+		selectable = test.instance.selectable();
+		index = [].indexOf.call(selectable, test.instance.activeOption);
 		assert.equal(
 			index,
 			index,

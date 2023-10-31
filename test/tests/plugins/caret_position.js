@@ -29,7 +29,6 @@ describe('plugin: caret_position', function () {
 			test.instance.addItem('a');
 			test.instance.addItem('b');
 			const itemb = test.instance.getItem('b');
-			const itema = test.instance.getItem('a');
 
 			click(test.instance.control, function () {
 				syn.type(
@@ -63,7 +62,6 @@ describe('plugin: caret_position', function () {
 
 			test.instance.addItem('a');
 			test.instance.addItem('b');
-			const itema = test.instance.getItem('a');
 			const itemb = test.instance.getItem('b');
 
 			click(test.instance.control, function () {

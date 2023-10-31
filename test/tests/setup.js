@@ -163,7 +163,7 @@ describe('Setup', function () {
 
 	describe('<select>', function () {
 		it_n('should complete without exceptions', function () {
-			const test = setup_test('<select></select>', {});
+			setup_test('<select></select>', {});
 		});
 		it_n(
 			'should allow for values optgroups with duplicated options',
@@ -580,7 +580,7 @@ describe('Setup', function () {
 
 	describe('<select multiple>', function () {
 		it_n('should complete without exceptions', function () {
-			const test = setup_test('<select>', {});
+			setup_test('<select>', {});
 		});
 		describe('getValue()', function () {
 			it_n('should return [] when empty', function () {
@@ -701,7 +701,7 @@ describe('Setup', function () {
 					'</select>',
 				{
 					render: {
-						option(item, escape) {
+						option(item) {
 							return $('<div class="option custom-option">').text(
 								item.text
 							);

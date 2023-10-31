@@ -282,7 +282,7 @@ describe('Interaction', function () {
 
 				const test = setup_test(select, {
 					render: {
-						optgroup_header(data, escape) {
+						optgroup_header() {
 							return '<input class="optgroup-header">';
 						},
 					},
@@ -444,7 +444,7 @@ describe('Interaction', function () {
 			await asyncClick(
 				test.instance.dropdown.querySelector('[data-value="b"]')
 			);
-			var option_after =
+			option_after =
 				test.instance.input.querySelector('option[value="b"]');
 			assert.equal(
 				option_before,
@@ -475,7 +475,7 @@ describe('Interaction', function () {
 			await asyncClick(
 				test.instance.dropdown.querySelector('[data-value="a"]')
 			);
-			var option_after =
+			option_after =
 				test.instance.input.querySelector('option[value="b"]');
 			assert.equal(
 				option_before,
@@ -1381,6 +1381,7 @@ describe('Interaction', function () {
 					);
 
 					syn.type('\b', test.instance.control_input, function () {
+						// eslint-disable-next-line no-shadow
 						const option_after =
 							test.instance.input.querySelector(
 								'option[value="b"]'
@@ -1703,6 +1704,7 @@ describe('Interaction', function () {
 				'should add an item  normally if there is no createFilter',
 				[undefined, null, ''],
 				function (instance) {
+					// eslint-disable-next-line no-unused-expressions
 					expect(instance.getItem(text)).to.be.ok;
 				}
 			);
@@ -1717,6 +1719,7 @@ describe('Interaction', function () {
 					},
 				],
 				function (instance) {
+					// eslint-disable-next-line no-unused-expressions
 					expect(instance.getItem(text)).to.be.ok;
 				}
 			);
@@ -1867,11 +1870,13 @@ describe('Interaction', function () {
 				</form>`;
 		const test = setup_test(html);
 
-		test.html.addEventListener('submit', (evt) => {
+		test.html.addEventListener('submit', () => {
+			// eslint-disable-next-line no-console
 			console.log(
 				'isopen',
 				test.instance.isOpen,
 				'activeElement',
+				// eslint-disable-next-line @wordpress/no-global-active-element
 				document.activeElement
 			);
 			throw 'form should not be submitted';

@@ -30,7 +30,7 @@ describe('optgroups', function () {
 	});
 
 	it_n('load optgroups', function (done) {
-		var test = setup_test('<input>', {
+		const test = setup_test('<input>', {
 			labelField: 'value',
 			searchField: ['value'],
 			preload: true,
@@ -58,6 +58,7 @@ describe('optgroups', function () {
 
 		async function TestGroupValue(group, value) {
 			assert.isTrue(test.instance.isOpen, 'should be open to start');
+			// eslint-disable-next-line no-shadow
 			const clone = test.instance.dropdown_content
 				.querySelector(`[data-group="${group}"]`)
 				.querySelector(`[data-value="${value}"]`);
@@ -121,11 +122,13 @@ describe('optgroups', function () {
 	});
 
 	it_n('searching', async function () {
+		// eslint-disable-next-line no-shadow
 		const options = [
 			{ optgroup: 'bird', value: 'chicken' },
 			{ optgroup: 'mammal', value: 'cat' },
 		];
 
+		// eslint-disable-next-line no-shadow
 		const groups = [
 			{ value: 'bird', label: 'Bird' },
 			{ value: 'mammal', label: 'Mammal' },

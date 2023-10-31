@@ -119,6 +119,7 @@ describe('Validation', function () {
 		it_n(
 			'should not submit form (<select required> w/ hidden controlInput)',
 			function () {
+				// eslint-disable-next-line no-shadow
 				const test_required = `<form>
 					<select class="setup-here" name="n" required />
 						<option value="">select..</option>
@@ -127,12 +128,13 @@ describe('Validation', function () {
 					<button type="submit" id="submit"></button>
 				</form>`;
 
+				// eslint-disable-next-line no-shadow
 				const test = setup_test(test_required, {
 					controlInput: '<input />',
 					create: true,
 				});
 
-				test.html.addEventListener('submit', (evt) => {
+				test.html.addEventListener('submit', () => {
 					throw 'form should not be submitted';
 				});
 
@@ -146,6 +148,7 @@ describe('Validation', function () {
 		);
 
 		it_n('should not validate with size attribute', () => {
+			// eslint-disable-next-line no-shadow
 			const test_required = `<form>
 					<select class="setup-here" name="n" required size="2"/>
 						<option value="">select..</option>
@@ -155,6 +158,7 @@ describe('Validation', function () {
 					<button type="submit" id="submit"></button>
 				</form>`;
 
+			// eslint-disable-next-line no-shadow
 			const test = setup_test(test_required);
 
 			assert.isFalse(
@@ -193,6 +197,7 @@ describe('Validation', function () {
 			'should pass validation if no element is selected',
 			function (done) {
 				button.addEventListener('click', function (evt) {
+					// eslint-disable-next-line no-unused-expressions
 					expect(form.checkValidity()).to.be.true;
 					evt.preventDefault();
 					done();
@@ -212,7 +217,7 @@ describe('Validation', function () {
 
 			const test = setup_test(test_required, { create: true });
 
-			test.html.addEventListener('submit', (evt) => {
+			test.html.addEventListener('submit', () => {
 				throw 'form should not be submitted';
 			});
 

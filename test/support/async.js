@@ -9,6 +9,7 @@ function mouseEvent(el, evt = 'click') {
 	return cancelled;
 }
 
+// eslint-disable-next-line no-unused-vars
 async function asyncClick(el) {
 	if (mouseEvent(el, 'mousedown')) {
 		mouseEvent(el, 'click');
@@ -17,8 +18,10 @@ async function asyncClick(el) {
 	await waitFor(100);
 }
 
+// eslint-disable-next-line no-unused-vars
 async function asyncType(text) {
 	return new Promise((resolve) => {
+		// eslint-disable-next-line @wordpress/no-global-active-element
 		syn.type(text, document.activeElement, () => {
 			resolve();
 		});
