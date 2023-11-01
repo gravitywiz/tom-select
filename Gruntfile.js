@@ -32,6 +32,8 @@ module.exports = function (grunt) {
 		'copy_built_js',
 	]);
 
+	grunt.registerTask('dev', ['build', 'watch', 'copy_built_js']);
+
 	grunt.registerTask('serve', [
 		'build',
 		'builddocs',

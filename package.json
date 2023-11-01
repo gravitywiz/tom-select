@@ -99,6 +99,7 @@
     "test": "karma start",
     "test:one": "karma start --test_one",
     "test:typescript": "tsc -p .config --noemit",
+    "dev": "grunt dev",
     "start": "grunt serve",
     "pretest": "grunt build",
     "prepare": "husky install",
