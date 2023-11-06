@@ -32,7 +32,12 @@ module.exports = function (grunt) {
 		'copy_built_js',
 	]);
 
-	grunt.registerTask('dev', ['build', 'watch', 'copy_built_js']);
+	grunt.registerTask('dev', [
+		'clean:library',
+		'shell:buildjs',
+		'copy_built_js',
+		'watch',
+	]);
 
 	grunt.registerTask('serve', [
 		'build',
