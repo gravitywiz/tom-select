@@ -129,12 +129,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		this.inputId = getId(input, 'tomselect-' + instance_i);
 		this.isRequired = input.required;
 
-		console.log('first options', { ...this.options });
-		setTimeout(
-			() => console.log('next options', { ...this.options }),
-			1000
-		);
-
 		// search system
 		this.sifter = new Sifter(this.options, {
 			diacritics: settings.diacritics,
@@ -482,12 +476,21 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			iterate(this.options, (option: TomOption) => {
 				this.updateOption(option.text, option);
 			});
+
+			if (this.input.disabled !== this.isDisabled) {
+				if (this.input.disabled) {
+					this.disable();
+				} else {
+					this.enable();
+				}
+			}
 		});
 
 		this.mutationObserver.observe(node, {
 			subtree: true,
 			childList: true,
-			// attributeFilter: [],
+			attributes: true,
+			attributeFilter: ['disabled'],
 		});
 	}
 
