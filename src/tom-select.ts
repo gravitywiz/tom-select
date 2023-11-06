@@ -59,6 +59,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	public dropdown_content: HTMLElement;
 	public focus_node: HTMLElement;
 
+	public mutationObserver?: MutationObserver;
+
 	public order: number = 0;
 	public settings: TomSettings;
 	public input: TomInput;
@@ -126,6 +128,12 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		this.rtl = /rtl/i.test(dir);
 		this.inputId = getId(input, 'tomselect-' + instance_i);
 		this.isRequired = input.required;
+
+		console.log('first options', { ...this.options });
+		setTimeout(
+			() => console.log('next options', { ...this.options }),
+			1000
+		);
 
 		// search system
 		this.sifter = new Sifter(this.options, {
@@ -464,6 +472,23 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		if (settings.preload === true) {
 			self.preload();
 		}
+
+		this.setupMutationObserver(this.input);
+	}
+
+	setupMutationObserver(node: HTMLElement) {
+		this.mutationObserver = new MutationObserver((mutations, observer) => {
+			// TODO look into performance of this to avoid running this on ever single mutation.
+			iterate(this.options, (option: TomOption) => {
+				this.updateOption(option.text, option);
+			});
+		});
+
+		this.mutationObserver.observe(node, {
+			subtree: true,
+			childList: true,
+			// attributeFilter: [],
+		});
 	}
 
 	/**
@@ -1866,6 +1891,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		// invalidate render cache
 		// don't remove existing node yet, we'll remove it after replacing it
 		self.uncacheValue(value_new);
+
+		data.disabled = Boolean(data.$option.disabled);
 
 		self.options[value_new] = data;
 
