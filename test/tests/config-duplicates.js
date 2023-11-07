@@ -19,7 +19,7 @@ describe('duplicates', function () {
 		assert.equal(
 			test.instance.input.querySelectorAll('option[value="a"]').length,
 			2,
-			'should have 3 options w/ value=a in original select'
+			'should have 2 options w/ value=a in original select'
 		);
 
 		test.instance.addItem('a');
@@ -38,7 +38,9 @@ describe('duplicates', function () {
 			items.pop();
 			await asyncType('\b');
 			const items_after = test.instance.controlChildren();
-			assert.deepEqual(items, items_after);
+			items.forEach((item, i) => {
+				assert.isTrue(item.isEqualNode(items_after[i]));
+			});
 		}
 	});
 
