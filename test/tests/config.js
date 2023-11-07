@@ -27,10 +27,23 @@ describe('Configuration settings', function () {
 						test.instance.isOpen,
 						'should be closed after selected'
 					);
+
+					// Due to potentially re-rendered options, the underlying DOM nodes may not be strictly equal
+					// so we check some attributes and the innter text to make sure the two nodes are representing
+					// the same option.
+					const attrs = ['id', 'data-value'];
+					attrs.forEach((attr) => {
+						assert.equal(
+							option_a[attr],
+							test.instance.activeOption[attr],
+							`active option should be set after closing but the \`${attr}\` attribute does not match between the active option and the last selected option.`
+						);
+					});
+
 					assert.equal(
-						option_a,
-						test.instance.activeOption,
-						'active option should be set after closing'
+						option_a.innerText,
+						test.instance.activeOption.innerText,
+						'active option should be set after closing but the `innerText` does not match between the active option and the last selected option.'
 					);
 
 					done();
