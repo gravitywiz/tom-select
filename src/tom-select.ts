@@ -1895,7 +1895,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		// don't remove existing node yet, we'll remove it after replacing it
 		self.uncacheValue(value_new);
 
-		data.disabled = Boolean(data.$option.disabled);
+		data.disabled = Boolean(data?.$option?.disabled);
 
 		self.options[value_new] = data;
 
