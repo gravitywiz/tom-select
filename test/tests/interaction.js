@@ -963,7 +963,23 @@ describe('Interaction', function () {
 						test.instance.control_input,
 						function () {
 							assert.equal(test.instance.activeItems.length, 1);
-							assert.equal(test.instance.activeItems[0], itemb);
+
+							assert.isString(test.instance.activeItems[0].id);
+							assert.exists(test.instance.activeItems[0].id);
+							assert.isString(itemb.id);
+							assert.exists(itemb.id);
+
+							['id', 'data-value'].forEach((attr) => {
+								assert.equal(
+									test.instance.activeItems[0][attr],
+									itemb[attr]
+								);
+							});
+
+							assert.equal(
+								test.instance.activeItems[0].innerText,
+								itemb.innerText
+							);
 
 							done();
 						}
