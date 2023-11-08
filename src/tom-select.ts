@@ -2853,7 +2853,10 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			// make sure we have some classes if a template is overwritten
 			if (templateName === 'item') {
 				addClasses(html, self.settings.itemClass);
-				setAttr(html, { 'data-ts-item': '' });
+				setAttr(html, {
+					'data-ts-item': '',
+					id: self.inputId + '-opt-' + data.$order + '-item',
+				});
 			} else {
 				addClasses(html, self.settings.optionClass);
 				setAttr(html, {
