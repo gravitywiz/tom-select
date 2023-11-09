@@ -341,6 +341,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				'[data-ts-item]',
 				control
 			);
+			console.log('target match', target_match);
 			if (
 				target_match &&
 				self.onItemSelect(evt as MouseEvent, target_match as TomItem)
@@ -472,6 +473,9 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 	setupMutationObserver(node: HTMLElement) {
 		this.mutationObserver = new MutationObserver((mutations, observer) => {
+
+			// console.log('mutation', this.options);
+
 			// TODO look into performance of this to avoid running this on ever single mutation.
 			iterate(this.options, (option: TomOption) => {
 				this.updateOption(option.text, option);
@@ -1214,9 +1218,15 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		addClasses(item, 'active last-active');
 		self.trigger('item_select', item);
 		// eslint-disable-next-line eqeqeq
-		if (self.activeItems.indexOf(item) == -1) {
+
+		console.log('setting class....', self.activeItems);
+
+		if (self.activeItems.find((i) => i.id === item.id)) {
 			self.activeItems.push(item);
 		}
+		// if (self.activeItems.indexOf(item) == -1) {
+		// 	self.activeItems.push(item);
+		// }
 	}
 
 	/**
@@ -2013,6 +2023,42 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	}
 
 	/**
+	 * Returns the dom element of the option
+	 * matching the given value.
+	 *
+	 */
+	getOptionNew(
+		value: undefined | null | boolean | string | number,
+		create: boolean = false
+	): null | HTMLElement {
+		const self = this;
+		const hashed = hash_key(value);
+		if (hashed === null) {
+			return null;
+		}
+
+		const option = this.options[hashed];
+
+		if (!option) {
+			return null;
+		}
+
+		const optionEl = document.getElementById(
+			self.inputId + '-opt-' + option.$order + '-item'
+		);
+
+		if (optionEl) {
+			return optionEl;
+		}
+
+		if (create) {
+			return this._render('option', option);
+		}
+
+		return null;
+	}
+
+	/**
 	 * Returns the dom element of the next or previous dom element of the same type
 	 * Note: adjacent options may not be adjacent DOM elements (optgroups)
 	 *
@@ -2056,7 +2102,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 * matching the given value.
 	 *
 	 */
-	getItem(item: string | TomItem | null): null | TomItem {
+	getItemOld(item: string | TomItem | null): null | TomItem {
 		if (typeof item === 'object') {
 			return item;
 		}
@@ -2065,6 +2111,31 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		return value !== null
 			? this.control.querySelector(`[data-value="${addSlashes(value)}"]`)
 			: null;
+	}
+
+	/**
+	 * Returns the dom element of the item
+	 * matching the given value.
+	 *
+	 */
+	getItem(item: string | TomItem | null): null | TomItem {
+		if (typeof item === 'object') {
+			return item;
+		}
+
+		const value = hash_key(item);
+		if (!value) {
+			return null;
+		}
+
+		const option = this.options[value];
+		if (!option) {
+			return null;
+		}
+
+		const el = document.getElementById(`${option.$id}-item`) as TomItem;
+
+		return el ? el : null;
 	}
 
 	/**
@@ -2855,7 +2926,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				addClasses(html, self.settings.itemClass);
 				setAttr(html, {
 					'data-ts-item': '',
-					id: self.inputId + '-opt-' + data.$order + '-item',
+					id: `${data.$id}-item`,
 				});
 			} else {
 				addClasses(html, self.settings.optionClass);
