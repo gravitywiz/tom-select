@@ -1239,8 +1239,6 @@ describe('Interaction', function () {
 					test.instance.addItem('a');
 					test.instance.addItem('b');
 					test.instance.addItem('c');
-					const itema = test.instance.getItem(first_item);
-					const itemc = test.instance.getItem(last_item);
 
 					assert.equal(test.instance.activeItems.length, 0);
 
@@ -1248,30 +1246,46 @@ describe('Interaction', function () {
 					syn.type(
 						'[shift]',
 						test.instance.control_input,
-						function () {
-							// 2) click first item
-							click(itema, function () {
-								assert.equal(
-									test.instance.activeItems.length,
-									1
-								);
+						async function () {
+							// due to DOM mutations, we need to wait for the next tick
+							// before continuing or else the click event will go to a DOM node
+							// that is not yet in the DOM.
+							await new Promise((resolve) =>
+								setTimeout(resolve, 0)
+							);
 
-								// 3) click last item
-								click(itemc, function () {
+							// 2) click first item
+							// click(itema, function () {
+							click(
+								test.instance.getItem(first_item),
+								function () {
 									assert.equal(
 										test.instance.activeItems.length,
-										3
+										1
 									);
 
-									// 4) release shift key
-									syn.type(
-										'[shift-up]',
-										test.instance.control_input,
-										function () {}
+									// 3) click last item
+									// click(itemc, function () {
+									click(
+										test.instance.getItem(last_item),
+										function () {
+											assert.equal(
+												test.instance.activeItems
+													.length,
+												3
+											);
+
+											// 4) release shift key
+											syn.type(
+												'[shift-up]',
+												test.instance.control_input,
+												function () {}
+											);
+											done();
+										}
 									);
-									done();
-								});
-							});
+								}
+							);
 						}
 					);
 				}
