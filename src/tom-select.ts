@@ -91,7 +91,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	public loadedSearches: { [key: string]: boolean } = {};
 
 	public activeOption: null | HTMLElement = null;
-	public activeItems: TomItem[] = [];
+
+	/**
+	 * array of active item ids
+	 */
+	public activeItems: string[] = [];
 
 	public optgroups: TomOptions = {};
 	public options: TomOptions = {};
@@ -1178,7 +1182,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			}
 			for (i = begin; i <= end; i++) {
 				item = self.control.children[i] as TomItem;
-				if (self.activeItems.indexOf(item) === -1) {
+				if (self.isItemActive(item)) {
 					self.setActiveItemClass(item);
 				}
 			}
@@ -1205,6 +1209,27 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	}
 
 	/**
+	 * Given a selected item, determines if that item is "active"
+	 *
+	 * @param item TomItem
+	 * @return boolean
+	 */
+	isItemActive(item: TomItem): boolean {
+		const self = this;
+		return self.activeItems.some((currId) => currId === item.id);
+	}
+
+	/**
+	 * Gets a (selected) "item" from the DOM given it's unique id.
+	 *
+	 * @param itemId string
+	 * @return TomItem
+	 */
+	getItemById(itemId: string) {
+		return document.getElementById(itemId) as TomItem;
+	}
+
+	/**
 	 * Set the active and last-active classes
 	 *
 	 */
@@ -1219,14 +1244,9 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		self.trigger('item_select', item);
 		// eslint-disable-next-line eqeqeq
 
-		console.log('setting class....', self.activeItems);
-
-		if (self.activeItems.find((i) => i.id === item.id)) {
-			self.activeItems.push(item);
+		if (self.isItemActive(item)) {
+			self.activeItems.push(item.id);
 		}
-		// if (self.activeItems.indexOf(item) == -1) {
-		// 	self.activeItems.push(item);
-		// }
 	}
 
 	/**
@@ -1234,7 +1254,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	removeActiveItem(item: TomItem) {
-		const idx = this.activeItems.indexOf(item);
+		const idx = this.activeItems.indexOf(item.id);
 		this.activeItems.splice(idx, 1);
 		removeClasses(item, 'active');
 	}
@@ -1244,7 +1264,10 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	clearActiveItems() {
-		removeClasses(this.activeItems, 'active');
+		const items = this.activeItems
+			.map((id) => this.getItemById(id))
+			.filter(Boolean);
+		removeClasses(items, 'active');
 		this.activeItems = [];
 	}
 
@@ -1344,7 +1367,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		self.hideInput();
 		self.close();
 
-		self.activeItems = activeItems;
+		self.activeItems = activeItems.map((child) => child.id);
 		iterate(activeItems, (item: TomItem) => {
 			self.setActiveItemClass(item);
 		});
@@ -2259,7 +2282,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		item.remove();
 		if (item.classList.contains('active')) {
-			idx = self.activeItems.indexOf(item);
+			idx = self.activeItems.indexOf(item.id);
 			self.activeItems.splice(idx, 1);
 			removeClasses(item, 'active');
 		}
@@ -2652,14 +2675,17 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const rm_items: TomItem[] = [];
 
 		if (self.activeItems.length) {
-			tail = getTail(self.activeItems, direction);
+			tail = self.getItemById(getTail(self.activeItems, direction));
 			caret = nodeIndex(tail);
 
 			if (direction > 0) {
 				caret++;
 			}
 
-			iterate(self.activeItems, (item: TomItem) => rm_items.push(item));
+			iterate(
+				self.activeItems.map((id) => this.getItemById(id)),
+				(item: TomItem) => rm_items.push(item)
+			);
 		} else if (
 			(self.isFocused || self.settings.mode === 'single') &&
 			self.items.length
