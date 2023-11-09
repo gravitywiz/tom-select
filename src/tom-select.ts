@@ -1147,8 +1147,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 */
 	setActiveItem(item?: TomItem, e?: MouseEvent | KeyboardEvent) {
 		const self = this;
-		let i, begin, end, swap;
-		let last;
 
 		if (self.settings.mode === 'single') {
 			return;
@@ -1171,19 +1169,23 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			isKeyDown('shiftKey', e) &&
 			self.activeItems.length
 		) {
-			last = self.getLastActive();
-			begin = Array.prototype.indexOf.call(self.control.children, last);
-			end = Array.prototype.indexOf.call(self.control.children, item);
+			const last = self.getLastActive();
+			let begin = Array.prototype.indexOf.call(
+				self.control.children,
+				last
+			);
+			let end = Array.prototype.indexOf.call(self.control.children, item);
 
 			if (begin > end) {
-				swap = begin;
+				const swap = begin;
 				begin = end;
 				end = swap;
 			}
-			for (i = begin; i <= end; i++) {
-				item = self.control.children[i] as TomItem;
-				if (self.isItemActive(item)) {
-					self.setActiveItemClass(item);
+
+			for (let i = begin; i <= end; i++) {
+				const currentItem = self.control.children[i] as TomItem;
+				if (!self.activeItems.includes(currentItem.id)) {
+					self.setActiveItemClass(currentItem);
 				}
 			}
 			preventDefault(e);
@@ -1209,17 +1211,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	}
 
 	/**
-	 * Given a selected item, determines if that item is "active"
-	 *
-	 * @param item TomItem
-	 * @return boolean
-	 */
-	isItemActive(item: TomItem): boolean {
-		const self = this;
-		return self.activeItems.some((currId) => currId === item.id);
-	}
-
-	/**
 	 * Gets a (selected) "item" from the DOM given it's unique id.
 	 *
 	 * @param itemId string
@@ -1242,9 +1233,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		addClasses(item, 'active last-active');
 		self.trigger('item_select', item);
-		// eslint-disable-next-line eqeqeq
 
-		if (self.isItemActive(item)) {
+		if (!self.activeItems.includes(item.id)) {
 			self.activeItems.push(item.id);
 		}
 	}
