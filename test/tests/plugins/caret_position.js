@@ -28,43 +28,56 @@ describe('plugin: caret_position', function () {
 
 			test.instance.addItem('a');
 			test.instance.addItem('b');
-			const itemb = test.instance.getItem('b');
 
-			click(test.instance.control, function () {
-				syn.type(
-					'[left][' +
-						shortcut_key +
-						'][right][' +
-						shortcut_key +
-						'-up]',
-					test.instance.control_input,
-					function () {
-						assert.equal(test.instance.activeItems.length, 1);
-						assert.equal(test.instance.activeItems[0], itemb);
-						assert.equal(
-							itemb.previousElementSibling,
-							test.instance.control_input
-						);
+			/**
+			 * The newly added items aren't fully rendered in the DOM until the next tick
+			 * so we must wait for that before proceeding.
+			 */
+			setTimeout(() => {
+				click(test.instance.control, function () {
+					syn.type(
+						'[left][' +
+							shortcut_key +
+							'][right][' +
+							shortcut_key +
+							'-up]',
+						test.instance.control_input,
+						function () {
+							const itemb = test.instance.getItem('b');
+							const firstActiveItem = document.getElementById(
+								test.instance.activeItems[0]
+							);
 
-						done();
-					}
-				);
-			});
+							assert.equal(test.instance.activeItems.length, 1);
+							assert.equal(firstActiveItem, itemb);
+							assert.equal(
+								itemb.previousElementSibling,
+								test.instance.control_input
+							);
+
+							done();
+						}
+					);
+				});
+			}, 0);
 		}
 	);
 
-	it_n(
-		'should move caret before selected item when [left] pressed',
-		function (done) {
-			const test = setup_test('AB_Multi', {
-				plugins: ['caret_position'],
-			});
+	it('should move caret before selected item when [left] pressed', function (done) {
+		const test = setup_test('AB_Multi', {
+			plugins: ['caret_position'],
+		});
 
-			test.instance.addItem('a');
-			test.instance.addItem('b');
-			const itemb = test.instance.getItem('b');
+		test.instance.addItem('a');
+		test.instance.addItem('b');
 
+		/**
+		 * The newly added items aren't fully rendered in the DOM until the next tick
+		 * so we must wait for that before proceeding.
+		 */
+		setTimeout(() => {
 			click(test.instance.control, function () {
+				const itemb = test.instance.getItem('b');
 				test.instance.setActiveItem(itemb);
 
 				expect(itemb.nextElementSibling).to.be.equal(
@@ -78,8 +91,8 @@ describe('plugin: caret_position', function () {
 					done();
 				});
 			});
-		}
-	);
+		}, 0);
+	});
 
 	it_n(
 		'should remove first item when left then backspace pressed',

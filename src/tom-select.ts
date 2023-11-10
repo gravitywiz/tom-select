@@ -345,7 +345,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				'[data-ts-item]',
 				control
 			);
-			console.log('target match', target_match);
 			if (
 				target_match &&
 				self.onItemSelect(evt as MouseEvent, target_match as TomItem)
