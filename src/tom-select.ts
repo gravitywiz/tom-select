@@ -2036,42 +2036,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	}
 
 	/**
-	 * Returns the dom element of the option
-	 * matching the given value.
-	 *
-	 */
-	getOptionNew(
-		value: undefined | null | boolean | string | number,
-		create: boolean = false
-	): null | HTMLElement {
-		const self = this;
-		const hashed = hash_key(value);
-		if (hashed === null) {
-			return null;
-		}
-
-		const option = this.options[hashed];
-
-		if (!option) {
-			return null;
-		}
-
-		const optionEl = document.getElementById(
-			self.inputId + '-opt-' + option.$order + '-item'
-		);
-
-		if (optionEl) {
-			return optionEl;
-		}
-
-		if (create) {
-			return this._render('option', option);
-		}
-
-		return null;
-	}
-
-	/**
 	 * Returns the dom element of the next or previous dom element of the same type
 	 * Note: adjacent options may not be adjacent DOM elements (optgroups)
 	 *
