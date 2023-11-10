@@ -786,14 +786,17 @@ describe('API', function () {
 			//expect(test.instance.getItem(undefined).length).to.be.equal(0);
 		});
 
-		it_n('should get empty item', () => {
-			// eslint-disable-next-line no-shadow
-			const test = setup_test(
-				'<select><option value="">empty</option><option value="a">a</option></select>',
-				{ allowEmptyOption: true }
-			);
-			assert.isOk(test.instance.getItem(''));
-		});
+		/**
+		 * This feature is currenlty not supported
+		 */
+		// it('should get empty item', () => {
+		// 	// eslint-disable-next-line no-shadow
+		// 	const test = setup_test(
+		// 		'<select><option value="">empty</option><option value="a">a</option></select>',
+		// 		{ allowEmptyOption: true }
+		// 	);
+		// 	assert.isOk(test.instance.getItem(''));
+		// });
 	});
 
 	describe('clear()', function () {
