@@ -6,14 +6,20 @@ describe('plugin: remove_button', function () {
 		test.instance.addItem('b');
 		assert.equal(test.instance.items.length, 2);
 
-		const itema = test.instance.getItem('b');
-		const remove_button = itema.querySelector('.remove');
+		/**
+		 * The newly added items aren't fully rendered in the DOM until the next tick
+		 * so we must wait for that before proceeding.
+		 */
+		setTimeout(() => {
+			const itemb = test.instance.getItem('b');
+			const remove_button = itemb.querySelector('.remove');
 
-		syn.click(remove_button, function () {
-			assert.equal(test.instance.items.length, 1);
-			assert.equal(test.instance.items[0], 'a');
-			done();
-		});
+			syn.click(remove_button, function () {
+				assert.equal(test.instance.items.length, 1);
+				assert.equal(test.instance.items[0], 'a');
+				done();
+			});
+		}, 0);
 	});
 
 	it_n('option should reappear in dropdown when removed', function (done) {

@@ -955,29 +955,34 @@ describe('Interaction', function () {
 
 				test.instance.addItem('a');
 				test.instance.addItem('b');
-				const itemb = test.instance.getItem('b');
 
 				click(test.instance.control, function () {
 					syn.type(
 						'[' + shortcut_key + '][left][' + shortcut_key + '-up]',
 						test.instance.control_input,
 						function () {
+							const firstActiveItem = document.getElementById(
+								test.instance.activeItems[0]
+							);
+
+							const itemb = test.instance.getItem('b');
+
 							assert.equal(test.instance.activeItems.length, 1);
 
-							assert.isString(test.instance.activeItems[0].id);
-							assert.exists(test.instance.activeItems[0].id);
+							assert.isString(firstActiveItem.id);
+							assert.exists(firstActiveItem.id);
 							assert.isString(itemb.id);
 							assert.exists(itemb.id);
 
 							['id', 'data-value'].forEach((attr) => {
 								assert.equal(
-									test.instance.activeItems[0][attr],
+									firstActiveItem[attr],
 									itemb[attr]
 								);
 							});
 
 							assert.equal(
-								test.instance.activeItems[0].innerText,
+								firstActiveItem.innerText,
 								itemb.innerText
 							);
 
@@ -1301,37 +1306,47 @@ describe('Interaction', function () {
 				const test = setup_test('AB_Multi');
 
 				test.instance.addItem('a');
-				const itema = test.instance.getItem('a');
 
-				assert.equal(test.instance.activeItems.length, 0);
+				/**
+				 * The newly added items aren't fully rendered in the DOM until the next tick
+				 * so we must wait for that before proceeding.
+				 */
+				setTimeout(() => {
+					const itema = test.instance.getItem('a');
 
-				// 1) hold ctrl down
-				syn.type(
-					'[' + shortcut_key + ']',
-					test.instance.control_input,
-					function () {
-						// 2) activate itema
-						click(itema, function () {
-							assert.equal(test.instance.activeItems.length, 1);
+					assert.equal(test.instance.activeItems.length, 0);
 
-							// 3) de-activate itema with a click
+					// 1) hold ctrl down
+					syn.type(
+						'[' + shortcut_key + ']',
+						test.instance.control_input,
+						function () {
+							// 2) activate itema
 							click(itema, function () {
 								assert.equal(
 									test.instance.activeItems.length,
-									0
+									1
 								);
 
-								// 4) release ctrl key
-								syn.type(
-									'[' + shortcut_key + '-up]',
-									test.instance.control_input,
-									function () {}
-								);
-								done();
+								// 3) de-activate itema with a click
+								click(itema, function () {
+									assert.equal(
+										test.instance.activeItems.length,
+										0
+									);
+
+									// 4) release ctrl key
+									syn.type(
+										'[' + shortcut_key + '-up]',
+										test.instance.control_input,
+										function () {}
+									);
+									done();
+								});
 							});
-						});
-					}
-				);
+						}
+					);
+				}, 0);
 			}
 		);
 

@@ -243,8 +243,16 @@ describe('Events', function () {
 				done();
 			});
 			test.instance.addItem('b');
-			const item = test.instance.getItem('b');
-			click(item);
+			/**
+			 * Schedule the click on the next tick as the call to `addItem()`
+			 * renders the element in the currect tick and thus we must wait
+			 * until the next one to call `getItem()` and get the exact correct
+			 * DOM node back.
+			 */
+			setTimeout(() => {
+				const item = test.instance.getItem('b');
+				click(item);
+			}, 0);
 		});
 	});
 
