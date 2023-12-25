@@ -79,11 +79,27 @@ export default function getSettings(
 				return;
 			}
 
+			// if duplicates are allowed, make id (value) as id + text label
+			if (settings.allowDuplicates) {
+				const option_data = readData(option);
+				option_data[field_label] =
+					option_data[field_label] || option.textContent;
+				option_data[field_value] = option_data[field_value] || value;
+				option_data[field_disabled] =
+					option_data[field_disabled] || option.disabled;
+				option_data[field_optgroup] =
+					option_data[field_optgroup] || group;
+				option_data.id += '_' + option.text;
+				option_data.$option = option;
+				
+				optionsMap[value] = option_data;
+				options.push(option_data);
+			}
 			// if the option already exists, it's probably been
 			// duplicated in another optgroup. in this case, push
 			// the current group to the "optgroup" property on the
 			// existing option so that it's rendered in both places.
-			if (optionsMap.hasOwnProperty(value)) {
+			else if (optionsMap.hasOwnProperty(value)) {
 				if (group) {
 					const arr = optionsMap[value][field_optgroup];
 					if (!arr) {
