@@ -22,7 +22,7 @@ export default {
 	preload: null,
 	allowEmptyOption: false,
 	//closeAfterSelect: false,
-
+	allowDuplicates: false,
 	loadThrottle: 300,
 	loadingClass: 'loading',
 
