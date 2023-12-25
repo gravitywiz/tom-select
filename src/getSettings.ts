@@ -40,12 +40,14 @@ export default function getSettings(
 		optgroups: TomOption[];
 		items: string[];
 		maxItems: null | number;
+		allowDuplicates: null | boolean,
 	} = {
 		placeholder,
 		options: [],
 		optgroups: [],
 		items: [],
 		maxItems: null,
+		allowDuplicates: false,
 	};
 
 	/**
