@@ -2078,22 +2078,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 * matching the given value.
 	 *
 	 */
-	getItemOld(item: string | TomItem | null): null | TomItem {
-		if (typeof item === 'object') {
-			return item;
-		}
-
-		const value = hash_key(item);
-		return value !== null
-			? this.control.querySelector(`[data-value="${addSlashes(value)}"]`)
-			: null;
-	}
-
-	/**
-	 * Returns the dom element of the item
-	 * matching the given value.
-	 *
-	 */
 	getItem(item: string | TomItem | null): null | TomItem {
 		if (typeof item === 'object') {
 			return item;
