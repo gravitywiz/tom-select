@@ -476,9 +476,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 	setupMutationObserver(node: HTMLElement) {
 		this.mutationObserver = new MutationObserver((mutations, observer) => {
-
-			// console.log('mutation', this.options);
-
 			// TODO look into performance of this to avoid running this on ever single mutation.
 			iterate(this.options, (option: TomOption) => {
 				this.updateOption(option.text, option);
@@ -602,6 +599,33 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				this.on(key, fn);
 			}
 		}
+	}
+
+	/**
+	 * TODO: currently only used in itemIdsToValues
+	 */
+	itemIdToValue(itemId: string): string | null {
+		// remove "-item" suffix
+		const optId = itemId.slice(0, -5);
+		return this.options[optId]?.[this.settings.valueField] ?? null;
+	}
+
+	/**
+	 * TODO: not currently used
+	 */
+	itemIdsToValues(itemIds: string[]): string[] {
+		return itemIds
+			.map((id) => this.itemIdToValue(id) || '')
+			.filter(Boolean);
+	}
+
+	/**
+	 * Converts a selected (item) value to it's corresponding id.
+	 */
+	itemValueToId(itemValue: string): string | null {
+		const optId = get_hash(itemValue);
+		const option = this.options[optId];
+		return option ? `${option.$id}-item` : null;
 	}
 
 	/**
@@ -1108,11 +1132,21 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	getValue(): string | string[] {
+		const options = Object.values(this.options);
+		const values = this.items
+			.map((item) => {
+				// remove the "-item" suffix
+				const optionId = item.slice(0, -5);
+				const option = options.find((opt) => opt.$id === optionId);
+				return option?.[this.settings.valueField] ?? null;
+			})
+			.filter(Boolean);
+
 		if (this.is_select_tag && this.input.hasAttribute('multiple')) {
-			return this.items;
+			return values;
 		}
 
-		return this.items.join(this.settings.delimiter);
+		return values.join(this.settings.delimiter);
 	}
 
 	/**
@@ -1517,8 +1551,17 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		// filter out selected items
 		if (self.settings.hideSelected) {
 			result.items = result.items.filter((item) => {
+				// note that in this case "id" is a string value of the matched option value.
 				const hashed = hash_key(item.id);
-				return !(hashed && self.items.indexOf(hashed) !== -1);
+				const option = hashed ? self.options[hashed] : null;
+
+				if (!option) {
+					return false;
+				}
+
+				const itemId = `${option.$id}-item`;
+
+				return !self.items.includes(itemId);
 			});
 		}
 
@@ -1583,12 +1626,13 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 			const opt_hash = get_hash(opt_value);
 			let option_el = self.getOption(opt_hash, true) as HTMLElement;
+			const item_id = `${option.$id}-item`;
 
 			// toggle 'selected' class
 			if (!self.settings.hideSelected) {
 				option_el.classList.toggle(
 					'selected',
-					self.items.includes(opt_hash)
+					self.items.includes(item_id)
 				);
 			}
 
@@ -1732,7 +1776,14 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 					// eslint-disable-next-line eqeqeq
 					self.items[0] != undefined
 				) {
-					active_option = self.getOption(self.items[0]);
+					// remove "-item" suffix
+					const optId = self.items[0].slice(0, -5);
+					const option = Object.values(self.options).find(
+						(opt) => opt.$id === optId
+					);
+					active_option = option
+						? self.getOption(option[self.settings.valueField])
+						: null;
 				}
 
 				if (!dropdown_content.contains(active_option)) {
@@ -1936,9 +1987,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		// update the item if we have one
 		if (item) {
-			index_item = self.items.indexOf(value_old);
+			const item_old_id = `${data_old.$id}-item`;
+			index_item = self.items.indexOf(item_old_id);
 			if (index_item !== -1) {
-				self.items.splice(index_item, 1, value_new);
+				const item_new_id = `${data.$id}-item`;
+				self.items.splice(index_item, 1, item_new_id);
 			}
 
 			item_new = self._render('item', data);
@@ -1999,7 +2052,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	clearFilter(option: TomOption, value: string) {
-		if (this.items.indexOf(value) >= 0) {
+		const itemId = `${option.$id}-item`;
+		if (this.items.indexOf(itemId) >= 0) {
 			return true;
 		}
 		return false;
@@ -2107,7 +2161,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const self = this;
 
 		let items = Array.isArray(values) ? values : [values];
-		items = items.filter((x) => self.items.indexOf(x) === -1);
+		items = items.filter((value) => {
+			const itemId = this.itemValueToId(value) ?? '';
+			return self.items.indexOf(itemId) === -1;
+		});
+
 		const last_item = items[items.length - 1];
 		items.forEach((item) => {
 			self.isPending = item !== last_item;
@@ -2129,7 +2187,17 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			const inputMode = self.settings.mode;
 			const hashed = hash_key(value);
 
-			if (hashed && self.items.indexOf(hashed) !== -1) {
+			let option: TomOption | null = null;
+			if (hashed) {
+				option = this.options[hashed] ?? null;
+			}
+
+			let itemId: string | null = null;
+			if (option) {
+				itemId = `${option.$id}-item`;
+			}
+
+			if (itemId && self.items.indexOf(itemId) !== -1) {
 				if (inputMode === 'single') {
 					self.close();
 				}
@@ -2139,7 +2207,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				}
 			}
 
-			if (hashed === null || !self.options.hasOwnProperty(hashed)) {
+			if (
+				hashed === null ||
+				!self.options.hasOwnProperty(hashed) ||
+				!itemId
+			) {
 				return;
 			}
 			if (inputMode === 'single') {
@@ -2157,14 +2229,14 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			}
 
 			const wasFull = self.isFull();
-			self.items.splice(self.caretPos, 0, hashed);
+			self.items.splice(self.caretPos, 0, itemId);
 			self.insertAtCaret(item);
 
 			if (self.isSetup) {
 				// update menu / remove the option (if this is not one item being added as part of series)
 				if (!self.isPending && self.settings.hideSelected) {
-					const option = self.getOption(hashed);
-					const next = self.getAdjacent(option, 1);
+					const optionEl = self.getOption(hashed);
+					const next = self.getAdjacent(optionEl, 1);
 					if (next) {
 						self.setActiveOption(next);
 					}
@@ -2318,7 +2390,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		self.lastQuery = null;
 
 		if (self.isSetup) {
-			self.addItems(self.items);
+			const values = this.itemIdsToValues(self.items);
+			self.addItems(values);
 		}
 
 		self.updateOriginalInput();
@@ -2395,7 +2468,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 */
 	updateOriginalInput(opts: TomArgObject = {}) {
 		const self = this;
-		let option, label;
 
 		const empty_option = self.input.querySelector(
 			'option[value=""]'
@@ -2455,13 +2527,26 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 				// order selected <option> tags for values in self.items
 			} else {
-				self.items.forEach((value) => {
-					option = self.options[value]!;
-					label = option[self.settings.labelField] || '';
+				self.items.forEach((itemId) => {
+					// remove the "-item" suffix
+					const optionId = itemId.slice(0, -5);
+					const option = Object.values(self.options).find(
+						(opt) => opt.$id === optionId
+					);
+
+					if (!option) {
+						return;
+					}
+
+					// let option = self.options[itemId]!;
+					const label = option[self.settings.labelField] || '';
+					const value = option[self.settings.valueField] || '';
 
 					if (selected.includes(option.$option)) {
 						const reuse_opt = self.input.querySelector(
-							`option[value="${addSlashes(value)}"]:not(:checked)`
+							`option[value="${addSlashes(
+								itemId
+							)}"]:not(:checked)`
 						) as HTMLOptionElement;
 						AddSelected(reuse_opt, value, label);
 					} else {
