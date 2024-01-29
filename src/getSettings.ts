@@ -56,6 +56,7 @@ export default function getSettings(
 		let tagName;
 		const options = settings_element.options;
 		const optionsMap: { [key: string]: any } = {};
+		let order = 0;
 		let group_count = 1;
 
 		const readData = (el: HTMLElement): TomOption => {
@@ -71,6 +72,7 @@ export default function getSettings(
 
 		const addOption = (option: HTMLOptionElement, group?: string) => {
 			const value = hash_key(option.value);
+			console.log('addOption', { option, group, value });
 			// eslint-disable-next-line eqeqeq
 			if (value == null) {
 				return;
@@ -79,35 +81,63 @@ export default function getSettings(
 				return;
 			}
 
+			// const order = data.$order || order + 1;
+			const id = input.id + '-opt-' + ++order;
+
+			// TODO get this boi working.
+
+			const option_data = readData(option);
+			option_data[field_label] =
+				option_data[field_label] || option.textContent;
+			option_data[field_value] = option_data[field_value] || value;
+			option_data[field_disabled] =
+				option_data[field_disabled] || option.disabled;
+			option_data[field_optgroup] = option_data[field_optgroup] || group;
+			option_data.$option = option;
+
+			optionsMap[id] = option_data;
+			options.push(option_data);
+
+			if (group) {
+				const arr = optionsMap[id][field_optgroup];
+				if (!arr) {
+					optionsMap[id][field_optgroup] = group;
+				} else if (!Array.isArray(arr)) {
+					optionsMap[id][field_optgroup] = [arr, group];
+				} else {
+					arr.push(group);
+				}
+			}
+
 			// if the option already exists, it's probably been
 			// duplicated in another optgroup. in this case, push
 			// the current group to the "optgroup" property on the
 			// existing option so that it's rendered in both places.
-			if (optionsMap.hasOwnProperty(value)) {
-				if (group) {
-					const arr = optionsMap[value][field_optgroup];
-					if (!arr) {
-						optionsMap[value][field_optgroup] = group;
-					} else if (!Array.isArray(arr)) {
-						optionsMap[value][field_optgroup] = [arr, group];
-					} else {
-						arr.push(group);
-					}
-				}
-			} else {
-				const option_data = readData(option);
-				option_data[field_label] =
-					option_data[field_label] || option.textContent;
-				option_data[field_value] = option_data[field_value] || value;
-				option_data[field_disabled] =
-					option_data[field_disabled] || option.disabled;
-				option_data[field_optgroup] =
-					option_data[field_optgroup] || group;
-				option_data.$option = option;
+			// if (optionsMap.hasOwnProperty(value)) {
+			// 	if (group) {
+			// 		const arr = optionsMap[value][field_optgroup];
+			// 		if (!arr) {
+			// 			optionsMap[value][field_optgroup] = group;
+			// 		} else if (!Array.isArray(arr)) {
+			// 			optionsMap[value][field_optgroup] = [arr, group];
+			// 		} else {
+			// 			arr.push(group);
+			// 		}
+			// 	}
+			// } else {
+			// 	const option_data = readData(option);
+			// 	option_data[field_label] =
+			// 		option_data[field_label] || option.textContent;
+			// 	option_data[field_value] = option_data[field_value] || value;
+			// 	option_data[field_disabled] =
+			// 		option_data[field_disabled] || option.disabled;
+			// 	option_data[field_optgroup] =
+			// 		option_data[field_optgroup] || group;
+			// 	option_data.$option = option;
 
-				optionsMap[value] = option_data;
-				options.push(option_data);
-			}
+			// 	optionsMap[value] = option_data;
+			// 	options.push(option_data);
+			// }
 
 			if (option.selected) {
 				settings_element.items.push(value);
