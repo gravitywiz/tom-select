@@ -605,13 +605,10 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 * TODO: currently only used in itemIdsToValues
 	 */
 	itemIdToValue(itemId: string): string | null {
-		// remove "-item" suffix
-		const optId = itemId.slice(0, -5);
-		return this.options[optId]?.[this.settings.valueField] ?? null;
+		return this.options[itemId]?.[this.settings.valueField] ?? null;
 	}
 
 	/**
-	 * TODO: not currently used
 	 */
 	itemIdsToValues(itemIds: string[]): string[] {
 		return itemIds
@@ -625,7 +622,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	itemValueToId(itemValue: string): string | null {
 		const optId = get_hash(itemValue);
 		const option = this.options[optId];
-		return option ? `${option.$id}-item` : null;
+		return option ? option.$id : null;
 	}
 
 	/**
@@ -1135,9 +1132,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		const options = Object.values(this.options);
 		const values = this.items
 			.map((item) => {
-				// remove the "-item" suffix
-				const optionId = item.slice(0, -5);
-				const option = options.find((opt) => opt.$id === optionId);
+				const option = options.find((opt) => opt.$id === item);
 				return option?.[this.settings.valueField] ?? null;
 			})
 			.filter(Boolean);
@@ -1559,7 +1554,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 					return false;
 				}
 
-				const itemId = `${option.$id}-item`;
+				const itemId = option.$id;
 
 				return !self.items.includes(itemId);
 			});
@@ -1626,7 +1621,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 			const opt_hash = get_hash(opt_value);
 			let option_el = self.getOption(opt_hash, true) as HTMLElement;
-			const item_id = `${option.$id}-item`;
+			const item_id = option.$id;
 
 			// toggle 'selected' class
 			if (!self.settings.hideSelected) {
@@ -1776,10 +1771,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 					// eslint-disable-next-line eqeqeq
 					self.items[0] != undefined
 				) {
-					// remove "-item" suffix
-					const optId = self.items[0].slice(0, -5);
 					const option = Object.values(self.options).find(
-						(opt) => opt.$id === optId
+						(opt) => opt.$id === self.items[0]
 					);
 					active_option = option
 						? self.getOption(option[self.settings.valueField])
@@ -1987,10 +1980,10 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		// update the item if we have one
 		if (item) {
-			const item_old_id = `${data_old.$id}-item`;
+			const item_old_id = data_old.$id;
 			index_item = self.items.indexOf(item_old_id);
 			if (index_item !== -1) {
-				const item_new_id = `${data.$id}-item`;
+				const item_new_id = data.$id;
 				self.items.splice(index_item, 1, item_new_id);
 			}
 
@@ -2052,7 +2045,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 	 *
 	 */
 	clearFilter(option: TomOption, value: string) {
-		const itemId = `${option.$id}-item`;
+		const itemId = option.$id;
 		if (this.items.indexOf(itemId) >= 0) {
 			return true;
 		}
@@ -2147,7 +2140,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			return null;
 		}
 
-		const el = document.getElementById(`${option.$id}-item`) as TomItem;
+		const el = document.getElementById(option.$id) as TomItem;
 
 		return el ? el : null;
 	}
@@ -2194,7 +2187,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 			let itemId: string | null = null;
 			if (option) {
-				itemId = `${option.$id}-item`;
+				itemId = option.$id;
 			}
 
 			if (itemId && self.items.indexOf(itemId) !== -1) {
@@ -2528,10 +2521,8 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				// order selected <option> tags for values in self.items
 			} else {
 				self.items.forEach((itemId) => {
-					// remove the "-item" suffix
-					const optionId = itemId.slice(0, -5);
 					const option = Object.values(self.options).find(
-						(opt) => opt.$id === optionId
+						(opt) => opt.$id === itemId
 					);
 
 					if (!option) {
@@ -2974,7 +2965,7 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 				addClasses(html, self.settings.itemClass);
 				setAttr(html, {
 					'data-ts-item': '',
-					id: `${data.$id}-item`,
+					id: data.$id,
 				});
 			} else {
 				addClasses(html, self.settings.optionClass);

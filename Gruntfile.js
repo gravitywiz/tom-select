@@ -36,7 +36,7 @@ module.exports = function (grunt) {
 		'clean:library',
 		'shell:buildjs',
 		'copy_built_js',
-		'watch',
+		'watch:src_no_docs',
 	]);
 
 	grunt.registerTask('serve', [
@@ -424,6 +424,10 @@ module.exports = function (grunt) {
 			src: {
 				files: ['src/**'],
 				tasks: ['build', 'shell:builddocs', 'copy_built_js'],
+			},
+			src_no_docs: {
+				files: ['src/**'],
+				tasks: ['build', 'copy_built_js'],
 			},
 		},
 	});
