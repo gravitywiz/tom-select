@@ -1570,7 +1570,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 		// filter out selected items
 		if (self.settings.hideSelected) {
-			console.log('results', { result });
 			result.items = result.items.filter((item) => {
 				// note that in this case "id" is a string value of the matched option value.
 				// const hashed = hash_key(item.id);
@@ -1638,8 +1637,6 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			if (!item) {
 				continue;
 			}
-
-			console.log('item and results', { item, results });
 
 			const opt_value = item.id;
 			const option = self.options[opt_value];

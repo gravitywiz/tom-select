@@ -72,7 +72,6 @@ export default function getSettings(
 
 		const addOption = (option: HTMLOptionElement, group?: string) => {
 			const value = hash_key(option.value);
-			console.log('addOption', { option, group, value });
 			// eslint-disable-next-line eqeqeq
 			if (value == null) {
 				return;
@@ -81,10 +80,7 @@ export default function getSettings(
 				return;
 			}
 
-			// const order = data.$order || order + 1;
 			const id = input.id + '-opt-' + ++order;
-
-			// TODO get this boi working.
 
 			const option_data = readData(option);
 			option_data[field_label] =
