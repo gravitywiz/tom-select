@@ -1922,6 +1922,11 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 		if (option) {
 			if (self.dropdown_content.contains(option)) {
 				const option_new = self._render('option', data);
+
+				if (self.items.includes(value_new)) {
+					option_new.classList.add('selected');
+				}
+
 				replaceNode(option, option_new);
 
 				if (self.activeOption === option) {
