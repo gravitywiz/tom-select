@@ -476,12 +476,9 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 
 	setupMutationObserver(node: HTMLElement) {
 		this.mutationObserver = new MutationObserver((mutations, observer) => {
-
-			// console.log('mutation', this.options);
-
 			// TODO look into performance of this to avoid running this on ever single mutation.
 			iterate(this.options, (option: TomOption) => {
-				this.updateOption(option.text, option);
+				this.updateOption(option[this.settings.valueField], option);
 			});
 
 			if (this.input.disabled !== this.isDisabled) {
