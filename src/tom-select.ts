@@ -1071,6 +1071,26 @@ export default class TomSelect extends MicroPlugin(MicroEvent) {
 			removeClasses(self.wrapper, self.settings.loadingClass);
 		}
 
+		iterate(options, (option: TomOption) => {
+			/**
+			 * If no option exists in the original input for the newly fetched option,
+			 * add it to the DOM and store a reference to that new node on the object
+			 * object.
+			 */
+			if (!option.$option) {
+				const option_el = getDom(
+					'<option value="' +
+						escape_html(option[this.settings.valueField]) +
+						'">' +
+						escape_html(option[this.settings.labelField]) +
+						'</option>'
+				) as HTMLOptionElement;
+				option.$option = option_el;
+
+				self.input.append(option_el);
+			}
+		});
+
 		self.trigger('load', options, optgroups);
 	}
 
