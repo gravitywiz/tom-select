@@ -26,7 +26,7 @@ export default function (this: TomSelect, userOptions: RBOptions) {
 			title: 'Remove',
 			className: 'remove',
 			append: true,
-			tabindex: '-1',
+			tabindex: '0',
 		},
 		userOptions
 	);
