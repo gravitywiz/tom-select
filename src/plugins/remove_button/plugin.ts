@@ -50,7 +50,6 @@ export default function (this: TomSelect, userOptions: RBOptions) {
 		options.label +
 		'</a>';
 
-
 	self.hook('after', 'setupTemplates', () => {
 		const orig_render_item = self.settings.render.item;
 
