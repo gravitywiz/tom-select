@@ -26,6 +26,7 @@ export default function (this: TomSelect, userOptions: RBOptions) {
 			title: 'Remove',
 			className: 'remove',
 			append: true,
+			tabindex: '-1',
 		},
 		userOptions
 	);
@@ -41,11 +42,14 @@ export default function (this: TomSelect, userOptions: RBOptions) {
 	const html =
 		'<a href="javascript:void(0)" class="' +
 		options.className +
-		'" tabindex="-1" title="' +
+		'" tabindex="' +
+		(options.tabindex !== undefined ? options.tabindex : '-1') +  // Use custom tabindex or default to -1.
+		'" title="' +
 		escape_html(options.title) +
 		'">' +
 		options.label +
 		'</a>';
+
 
 	self.hook('after', 'setupTemplates', () => {
 		const orig_render_item = self.settings.render.item;
