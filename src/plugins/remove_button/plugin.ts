@@ -42,8 +42,7 @@ export default function (this: TomSelect, userOptions: RBOptions) {
 	const html =
 		'<a href="javascript:void(0)" class="' +
 		options.className +
-		'" tabindex="' +
-		(options.tabindex !== undefined ? options.tabindex : '-1') +  // Use custom tabindex or default to -1.
+		'" tabindex="' + options.tabindex +
 		'" title="' +
 		escape_html(options.title) +
 		'">' +
