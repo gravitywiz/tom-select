@@ -207,8 +207,19 @@ export default function (this: TomSelect) {
 				return;
 			}
 
+			// Save scroll position.
+			const scrollTop = dropdown_content.scrollTop;
+
 			loading_more = true;
 			self.load.call(self, self.lastValue);
+
+			// Restore scroll position after loading more results.
+			const observer = new MutationObserver(() => {
+				dropdown_content.scrollTop = scrollTop + 10;
+				observer.disconnect();
+			});
+
+			observer.observe(dropdown_content, { childList: true, subtree: true });
 		});
 	});
 }
