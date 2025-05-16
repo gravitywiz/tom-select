@@ -213,7 +213,11 @@ export default function (this: TomSelect) {
 			loading_more = true;
 			self.load.call(self, self.lastValue);
 
-			// Restore scroll position after loading more results.
+			// We use a MutationObserver here to wait until new DOM nodes (i.e., additional results) are inserted into the dropdown before restoring the scroll position.
+			// This helps avoid the jarring UX of the scroll jumping to the top or not reflecting the user's previous position when infinite scrolling is triggered.
+			// The `+10` adjustment is a small buffer to simulate a smooth transition and prevent a perceived "stickiness" at the bottom of the scroll area.
+			// Note: If performance issues arise in the future, we would need to revisit.
+			// Disconnecting the observer immediately after restoring scroll ensures minimal overhead.
 			const observer = new MutationObserver(() => {
 				dropdown_content.scrollTop = scrollTop + 10;
 				observer.disconnect();
