@@ -1,3 +1,5 @@
+/// <reference types="jquery" />
+
 /**
  * Plugin: "drag_drop" (Tom Select)
  * Copyright (c) contributors
@@ -14,6 +16,19 @@
  */
 
 import TomSelect from '../../tom-select';
+
+// @ts-ignore
+const $ = window.jQuery;
+
+interface JQuerySortableUIArg {
+	helper: JQuery;
+	item: JQuery;
+	offst: { top: number; left: number };
+	position: { top: number; left: number };
+	originalPosition: { top: number; left: number };
+	sender: JQuery;
+	placeholder: JQuery;
+}
 
 export default function (this: TomSelect) {
 	const self = this;
@@ -50,7 +65,7 @@ export default function (this: TomSelect) {
 			items: '[data-value]',
 			forcePlaceholderSize: true,
 			disabled: self.isLocked,
-			start: (e, ui) => {
+			start: (e: JQuery.Event, ui: JQuerySortableUIArg) => {
 				ui.placeholder.css('width', ui.helper.css('width'));
 				$control.css({ overflow: 'visible' });
 			},
