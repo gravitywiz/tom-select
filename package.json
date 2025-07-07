@@ -44,6 +44,7 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@types/jquery": "^3.5.14",
+    "@types/jquery-sortable": "^0.9.34",
     "@types/jqueryui": "^1.12.14",
     "@wordpress/eslint-plugin": "^17.1.0",
     "autoprefixer": "^10.2.4",

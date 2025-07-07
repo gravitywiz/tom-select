@@ -318,7 +318,7 @@
 	const reflow = (element) => element.offsetHeight;
 
 	const getjQuery = () => {
-		const { jQuery } = window;
+		const jQuery = require('jquery');
 
 		if (jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
 			return jQuery;
